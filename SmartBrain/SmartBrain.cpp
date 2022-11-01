@@ -5,14 +5,17 @@
 #include "RandomGo2d.h"
 #include <time.h>
 #include <stdlib.h>
+#include "DucksInPool.h"
 #define GoTimes  1000000
 int main()
 {
     srand(time(0));
     std::cout << "Hello World!\n";
-    RandomGo2d go ;
-    go.gogo(GoTimes);
-    printf("trid:%d distance:%d, backHome:%d  expect:%f", GoTimes, go.current,go.homeTime, sqrt(GoTimes));    
+    //RandomGo2d go ;
+    //go.gogo(GoTimes);
+    //printf("trid:%d distance:%d, backHome:%d  expect:%f", GoTimes, go.current,go.homeTime, sqrt(GoTimes));  
+    DucksInPool duck;
+    duck.DDTest(GoTimes);
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单

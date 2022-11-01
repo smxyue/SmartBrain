@@ -21,9 +21,15 @@
     <ClCompile Include="RandomGo2d.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="DucksInPool.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RandomGo2d.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DucksInPool.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
