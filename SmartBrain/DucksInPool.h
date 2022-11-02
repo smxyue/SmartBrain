@@ -8,6 +8,6 @@ class DucksInPool
 		void genDD();
 		void sortDD();
 		int canInOneDD();
-		void DDTest(int TestCount);
+		void test(int TestCount);
 };
 

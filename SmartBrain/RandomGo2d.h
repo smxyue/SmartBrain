@@ -8,6 +8,6 @@ class RandomGo2d
 		int goCount = 0;
 		int current = 0;
 		void go();
-		void gogo(int n);
+		void test(int n);
 };
 

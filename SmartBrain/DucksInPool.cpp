@@ -99,8 +99,9 @@ int DucksInPool::canInOneDD()
 	}
 	return 0;
 }
-void DucksInPool::DDTest(int TestCount)
+void DucksInPool::test(int TestCount)
 {
+	printf("\n\rDucks in pool is comming...\n\r");
 	int binggo = 0;
 	for (int i = 0;i < TestCount;i++)
 	{
