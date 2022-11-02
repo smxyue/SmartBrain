@@ -6,12 +6,14 @@
 #include <time.h>
 #include <stdlib.h>
 #include "DucksInPool.h"
+#include "JingGame.h"
 #define GoTimes  1000000
 int main()
 {
     srand(time(0));
     std::cout << "Hello World!\n";
     //RandomGo2d myTest ;
-    DucksInPool myTest;
-    myTest.test(GoTimes);
+    //DucksInPool myTest;
+    JingGame myTest;
+    myTest.test();
 }
