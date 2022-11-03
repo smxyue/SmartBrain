@@ -8,6 +8,7 @@
 #include "DucksInPool.h"
 #include "JingGame.h"
 #include "Prisoner100.h"
+#include "BoyBoy.h"
 #define GoTimes  10000
 int main()
 {
@@ -16,6 +17,7 @@ int main()
     //RandomGo2d myTest ;
     //DucksInPool myTest;
     //JingGame myTest;
-    Prisoner100 myTest;
+    //Prisoner100 myTest;
+    BoyBoy myTest;
     myTest.test(GoTimes);
 }

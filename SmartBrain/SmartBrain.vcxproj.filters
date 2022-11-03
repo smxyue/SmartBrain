@@ -30,6 +30,9 @@
     <ClCompile Include="Prisoner100.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="BoyBoy.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RandomGo2d.h">
@@ -42,6 +45,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Prisoner100.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="BoyBoy.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
