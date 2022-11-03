@@ -9,6 +9,7 @@
 #include "JingGame.h"
 #include "Prisoner100.h"
 #include "BoyBoy.h"
+#include "LetsMakeaDeal.h"
 #define GoTimes  10000
 int main()
 {
@@ -18,6 +19,7 @@ int main()
     //DucksInPool myTest;
     //JingGame myTest;
     //Prisoner100 myTest;
-    BoyBoy myTest;
+    //BoyBoy myTest;
+    LetsMakeaDeal myTest;
     myTest.test(GoTimes);
 }

@@ -130,6 +130,7 @@
     <ClCompile Include="BoyBoy.cpp" />
     <ClCompile Include="DucksInPool.cpp" />
     <ClCompile Include="JingGame.cpp" />
+    <ClCompile Include="LetsMakeaDeal.cpp" />
     <ClCompile Include="Prisoner100.cpp" />
     <ClCompile Include="RandomGo2d.cpp" />
     <ClCompile Include="SmartBrain.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="BoyBoy.h" />
     <ClInclude Include="DucksInPool.h" />
     <ClInclude Include="JingGame.h" />
+    <ClInclude Include="LetsMakeaDeal.h" />
     <ClInclude Include="Prisoner100.h" />
     <ClInclude Include="RandomGo2d.h" />
   </ItemGroup>
