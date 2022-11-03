@@ -7,13 +7,15 @@
 #include <stdlib.h>
 #include "DucksInPool.h"
 #include "JingGame.h"
-#define GoTimes  1000000
+#include "Prisoner100.h"
+#define GoTimes  10000
 int main()
 {
     srand(time(0));
     std::cout << "Hello World!\n";
     //RandomGo2d myTest ;
     //DucksInPool myTest;
-    JingGame myTest;
-    myTest.test();
+    //JingGame myTest;
+    Prisoner100 myTest;
+    myTest.test(GoTimes);
 }

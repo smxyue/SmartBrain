@@ -27,6 +27,9 @@
     <ClCompile Include="JingGame.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Prisoner100.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RandomGo2d.h">
@@ -36,6 +39,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="JingGame.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Prisoner100.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
