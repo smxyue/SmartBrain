@@ -3,6 +3,13 @@
 #define GAMESCALE 5
 #define GAMEBLOCKS GAMESCALE *GAMESCALE
 
+struct BackPoint
+{
+	char room; //Œª÷√
+	char dir;
+	char neighbor; //  ≈‰øÈ
+};
+
 class Tetravex
 {
 	public:
@@ -37,11 +44,5 @@ class Tetravex
 		void printBackList();
 		void printP(bool block = false);
 		void test();
-};
-struct BackPoint
-{
-	char room; //Œª÷√
-	char dir;
-	char neighbor; //  ≈‰øÈ
 };
 

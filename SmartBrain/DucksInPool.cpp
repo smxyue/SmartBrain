@@ -16,14 +16,28 @@ void DucksInPool::genDD()
 		{
 
 			//xËæ»ú·ûºÅ
-			if (rand() % 2)
+			int  zone = rand() % 4;
+			switch(zone)
+			{
+				case 1:
+					x = x * -1.0;
+					break;
+				case 2:
+					x = x * -1.0;
+					y = y * -1.0;
+					break;
+				case 3:
+					y = y * -1.0;
+					break;
+			}
+			/*if (rand() % 2)
 			{
 				x = x * -1.0;
 			}
 			if (rand() % 2)
 			{
 				y = y * -1.0;
-			}
+			}*/
 			dd[0][count] = x;
 			dd[1][count] = y;
 			count++;

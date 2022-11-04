@@ -421,7 +421,7 @@ void Tetravex::printTryOrder()
     printf("]\n\r");
 }
 
-void Tetravex::printP(bool block = false)
+void Tetravex::printP(bool block)
 {
     printf("\n\rPosition:[");
     for (int i = 0; i < GAMEBLOCKS; i++)
