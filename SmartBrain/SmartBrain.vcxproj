@@ -133,6 +133,7 @@
     <ClCompile Include="LetsMakeaDeal.cpp" />
     <ClCompile Include="Prisoner100.cpp" />
     <ClCompile Include="RandomGo2d.cpp" />
+    <ClCompile Include="SafeBoxPwd.cpp" />
     <ClCompile Include="SmartBrain.cpp" />
     <ClCompile Include="Tetravex.cpp" />
   </ItemGroup>
@@ -143,6 +144,7 @@
     <ClInclude Include="LetsMakeaDeal.h" />
     <ClInclude Include="Prisoner100.h" />
     <ClInclude Include="RandomGo2d.h" />
+    <ClInclude Include="SafeBoxPwd.h" />
     <ClInclude Include="Tetravex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

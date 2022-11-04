@@ -11,6 +11,7 @@
 #include "BoyBoy.h"
 #include "LetsMakeaDeal.h"
 #include "Tetravex.h"
+#include "SafeBoxPwd.h"
 #define GoTimes  10000
 int main()
 {
@@ -22,6 +23,7 @@ int main()
     //Prisoner100 myTest;
     //BoyBoy myTest;
     //LetsMakeaDeal myTest;
-    Tetravex myTest;
+    //Tetravex myTest;
+    SafeBoxPwd myTest;
     myTest.test();
 }
