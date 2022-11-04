@@ -99,7 +99,7 @@ void Tetravex::choasMatrix()
 {
     int tmp[GAMEBLOCKS];
     for (int i = 0; i < GAMEBLOCKS; i++)
-        tmp[i] = GAMEBLOCKS - 1 - i;    //顺序全排列
+        tmp[i] = GAMEBLOCKS - 1 - i;    //全排列
     for (int i = GAMEBLOCKS; i > 0; i--)
     {
         int room = rand()%i;    //第i次选
