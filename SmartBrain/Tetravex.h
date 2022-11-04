@@ -1,6 +1,6 @@
 #pragma once
 #include <list>
-#define GAMESCALE 5
+#define GAMESCALE 4
 #define GAMEBLOCKS GAMESCALE *GAMESCALE
 
 struct BackPoint
@@ -43,6 +43,8 @@ class Tetravex
 		bool isUsed(char block);
 		void printBackList();
 		void printP(bool block = false);
+		void displayTetravex();
 		void test();
+		void test2();
 };
 

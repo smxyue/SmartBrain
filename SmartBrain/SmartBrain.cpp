@@ -10,16 +10,18 @@
 #include "Prisoner100.h"
 #include "BoyBoy.h"
 #include "LetsMakeaDeal.h"
+#include "Tetravex.h"
 #define GoTimes  10000
 int main()
 {
     srand(time(0));
     std::cout << "Hello World!\n";
     //RandomGo2d myTest ;
-    DucksInPool myTest;
+    //DucksInPool myTest;
     //JingGame myTest;
     //Prisoner100 myTest;
     //BoyBoy myTest;
     //LetsMakeaDeal myTest;
-    myTest.test(GoTimes);
+    Tetravex myTest;
+    myTest.test();
 }

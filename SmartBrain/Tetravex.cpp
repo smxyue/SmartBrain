@@ -93,6 +93,10 @@ void Tetravex::makeGame()
             }
         }
     }
+    for (int i = 0;i < GAMEBLOCKS;i++)
+    {
+        p[i] = i;
+    }
 }
 
 void Tetravex::choasMatrix()
@@ -117,7 +121,7 @@ void Tetravex::inputMatrix()
 {
     printf("Input block number one by one(up-left-right-down order:\n\r");
     int count = 0;
-    while (count < GAMEBLOCKS * GAMEBLOCKS * 4)
+    while (count < GAMEBLOCKS * 4)
     {
         char ch = getchar();
         if (ch >= '0' && ch <= '9')
@@ -132,11 +136,11 @@ void Tetravex::inputMatrix()
 
 void Tetravex::printMatrix()
 {
-    for (int row = 0;row < GAMEBLOCKS;row++)
+    for (int row = 0;row < GAMESCALE;row++)
     {
-        for (int col = 0;col < GAMEBLOCKS;col++)
+        for (int col = 0;col < GAMESCALE;col++)
         {
-            int start = (row * GAMEBLOCKS + col) * 4;
+            int start = (row * GAMESCALE + col) * 4;
             printf("[%d %d %d %d] ", matrix[start], matrix[start + 1], matrix[start + 2], matrix[start + 3]);
         }
         printf("\n\r");
@@ -146,12 +150,12 @@ bool Tetravex::checkItem(int* pp, int grid, int index) //格位  值位
 {
 
     int tindex;
-    int row = grid / GAMEBLOCKS;
-    int col = grid % GAMEBLOCKS;
+    int row = grid / GAMESCALE;
+    int col = grid % GAMESCALE;
     //上
     if (row > 0)
     {
-        tindex = (row - 1) * GAMEBLOCKS + col; //行少列同
+        tindex = (row - 1) * GAMESCALE + col; //行少列同
         tindex = pp[tindex];//该位实际的块是第几个。
         if (tindex != -1) //没有填
         {
@@ -162,9 +166,9 @@ bool Tetravex::checkItem(int* pp, int grid, int index) //格位  值位
         }
     }
     //右
-    if (col << GAMEBLOCKS - 2)
+    if (col << GAMESCALE - 2)
     {
-        tindex = row * GAMEBLOCKS + col + 1;
+        tindex = row * GAMESCALE + col + 1;
         tindex = pp[tindex];
         if (tindex != -1)
         {
@@ -175,9 +179,9 @@ bool Tetravex::checkItem(int* pp, int grid, int index) //格位  值位
         }
     }
     //下
-    if (row << GAMEBLOCKS - 2)
+    if (row << GAMESCALE - 2)
     {
-        tindex = (row + 1) * GAMEBLOCKS + col;
+        tindex = (row + 1) * GAMESCALE + col;
         tindex = pp[tindex];
         if (tindex != -1)
         {
@@ -190,7 +194,7 @@ bool Tetravex::checkItem(int* pp, int grid, int index) //格位  值位
     //左
     if (col > 0)
     {
-        tindex = row * GAMEBLOCKS + col - 1;
+        tindex = row * GAMESCALE + col - 1;
         tindex = pp[tindex];
         if (tindex != -1)
         {
@@ -206,7 +210,7 @@ bool Tetravex::checkItem(int* pp, int grid, int index) //格位  值位
 bool Tetravex::checkp()
 {
     int tindex;//相邻位
-    for (int i = 0;i < GAMEBLOCKS * GAMEBLOCKS;i++)//检查所有9个位置是否都正确
+    for (int i = 0;i < GAMEBLOCKS;i++)//检查所有9个位置是否都正确
     {
         int index = p[i]; //当排位为i的实际是matrix里的哪个
         if (!checkItem(p, i, index))
@@ -230,11 +234,11 @@ void Tetravex::qpl(int* chs, int* p, int size) //待选数组， 排序数组，排列长度
     //从最低位开始，依次填入待选数组里的所有元素，然后把这个顺序号去掉，用剩下的可选位排其他的
     if (size == 1)
     {
-        p[GAMEBLOCKS * GAMEBLOCKS - 1] = chs[0];
-        if (preCheck(p, GAMEBLOCKS * GAMEBLOCKS))
+        p[GAMEBLOCKS - 1] = chs[0];
+        if (preCheck(p, GAMEBLOCKS))
         {
             //printf("try:%d\n\r", count);
-            for (int l = 0;l < GAMEBLOCKS * GAMEBLOCKS;l++)
+            for (int l = 0;l < GAMEBLOCKS;l++)
             {
                 int r = p[l];
                 printf("%d  {%c %c %c %c}  ", r, matrix[r * 4], matrix[r * 4 + 1], matrix[r * 4 + 2], matrix[r * 4 + 3]);
@@ -246,13 +250,13 @@ void Tetravex::qpl(int* chs, int* p, int size) //待选数组， 排序数组，排列长度
     {
         for (int i = 0;i < size;i++)
         {
-            int newP[GAMEBLOCKS * GAMEBLOCKS] = { -1 };
+            int newP[GAMEBLOCKS] = { -1 };
             CloneP(p, newP);
-            newP[GAMEBLOCKS * GAMEBLOCKS - size] = chs[i];
-            int newChs[GAMEBLOCKS * GAMEBLOCKS];
+            newP[GAMEBLOCKS - size] = chs[i];
+            int newChs[GAMEBLOCKS];
             CloneChs(chs, newChs, i, size);
             int newSize = size - 1;
-            if (preCheck(newP, GAMEBLOCKS * GAMEBLOCKS - size))//如果前置序列已经不对，后续的所有序列都不需要试探了
+            if (preCheck(newP, GAMEBLOCKS - size))//如果前置序列已经不对，后续的所有序列都不需要试探了
             {
                 qpl(newChs, newP, newSize);
             }
@@ -316,13 +320,13 @@ void Tetravex::qpl_old(int* chs, int* p, int size) //待选数组， 排序数组，排列长
 bool Tetravex::tryBlock(char room, char block) //block块放在room位置是否合适
 {
     char mark = 0;
-    char row = room / GAMEBLOCKS;
-    char col = room % GAMEBLOCKS;
+    char row = room / GAMESCALE;
+    char col = room % GAMESCALE;
     char neighborRoom, neighborBlock;   //room邻居的序号，实际块号
     //顺序查看四周,此时，block是被看成是在当前room位置位置的
     if (row > 0)
     {
-        neighborRoom = room - GAMEBLOCKS;
+        neighborRoom = room - GAMESCALE;
         neighborBlock = p[neighborRoom];    //块号-1表示这个位置还没有数
         if (neighborBlock != -1)
         {
@@ -352,7 +356,7 @@ bool Tetravex::tryBlock(char room, char block) //block块放在room位置是否合适
             }
         }
     }
-    if (col < (GAMEBLOCKS - 1))
+    if (col < (GAMESCALE - 1))
     {
         neighborRoom = room + 1;
         neighborBlock = p[neighborRoom];
@@ -368,9 +372,9 @@ bool Tetravex::tryBlock(char room, char block) //block块放在room位置是否合适
             }
         }
     }
-    if (row < GAMEBLOCKS - 1)
+    if (row < GAMESCALE - 1)
     {
-        neighborRoom = room + GAMEBLOCKS;
+        neighborRoom = room + GAMESCALE;
         neighborBlock = p[neighborRoom];
         if (neighborBlock != -1)
         {
@@ -431,7 +435,7 @@ void Tetravex::printP(bool block)
             printf("%d ", p[i]);
             if (block)
             {
-                printf(":{%c %c %c %c} ",matrix[i*4],matrix[i*4+1],matrix[i*4+2],matrix[i*4+3]);
+                printf(":{%d %d %d %d} ",matrix[i*4],matrix[i*4+1],matrix[i*4+2],matrix[i*4+3]);
             }
         }
     }
@@ -488,7 +492,7 @@ char Tetravex::tryEmpty() //获取一个空位，试图填充，把候选项压栈
                     p[emptyRoom] = i;
                     tryIndex++;
                     tryOrder[tryIndex] = i;
-                    printf("%d <- %d{%c,%c,%c,%c}\n\r", emptyRoom, i, matrix[i * 4], matrix[i * 4 + 1], matrix[i * 4 + 2], matrix[i * 4 + 3]);
+                    printf("%d <- %d{%d,%d,%d,%d}\n\r", emptyRoom, i, matrix[i * 4], matrix[i * 4 + 1], matrix[i * 4 + 2], matrix[i * 4 + 3]);
                 }
                 else
                 {
@@ -496,7 +500,7 @@ char Tetravex::tryEmpty() //获取一个空位，试图填充，把候选项压栈
                     backItem.room = emptyRoom;
                     backItem.neighbor = i;
                     backList.push_back(backItem);
-                    printf("%d => %d{%c,%c,%c,%c}\n\r", emptyRoom, i, matrix[i * 4], matrix[i * 4 + 1], matrix[i * 4 + 2], matrix[i * 4 + 3]);
+                    printf("%d => %d{%d,%d,%d,%d}\n\r", emptyRoom, i, matrix[i * 4], matrix[i * 4 + 1], matrix[i * 4 + 2], matrix[i * 4 + 3]);
                 }
             }
         }
@@ -514,7 +518,10 @@ void Tetravex::printBackList()
 }
 void Tetravex::test()
 {
-    inputMatrix();
+    //inputMatrix();
+    makeGame();
+    choasMatrix();
+    displayTetravex();
     //ascMatrix();
     initTryOrder();
     char backCount = tryEmpty();
@@ -574,4 +581,39 @@ void Tetravex::test()
     }
     printf("Done!\n\r");
     printP(true);
+    displayTetravex();
+}
+void Tetravex::test2()
+{
+    makeGame();
+    for (int i = 0;i < GAMEBLOCKS;i++)
+        p[i] = i;
+    //choasMatrix();
+    displayTetravex();
+}
+void Tetravex::displayTetravex()
+{
+    int index;
+    printf("\n\rTetravex:\n\r");
+    for (int i = 0;i < GAMESCALE;i++)
+    {
+        for (int j = 0;j < GAMESCALE;j++)
+        {
+            int index = p[(i * GAMESCALE + j)] * 4;
+            printf(" %1d  ", matrix[index]);
+        }
+        printf("\n\r");
+        for (int j = 0;j < GAMESCALE;j++)
+        {
+            int index = p[(i * GAMESCALE + j)] * 4;
+            printf("%1d %1d ", matrix[index+1],matrix[index+2]);
+        }
+        printf("\n\r");
+        for (int j = 0;j < GAMESCALE;j++)
+        {
+            int index = p[(i * GAMESCALE + j)] * 4;
+            printf(" %1d  ", matrix[index+3]);
+        }
+        printf("\n\r");
+    }
 }
