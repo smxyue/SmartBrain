@@ -36,6 +36,9 @@
     <ClCompile Include="LetsMakeaDeal.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Tetravex.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RandomGo2d.h">
@@ -54,6 +57,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="LetsMakeaDeal.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Tetravex.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
