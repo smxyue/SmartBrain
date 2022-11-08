@@ -45,22 +45,33 @@ void DucksInPool::genDD()
 		}
 	}
 	//printf("\n\r");
-}void DucksInPool::genDD2()
+}
+void DucksInPool::genDD2()
 {
 	int count = 0;
 	while (count < SIZE)
 	{
+		//printf("\n\r");
 		//生成坐标
-		double r = (double)rand() / RAND_MAX;
-		double angle = (rand()%360)/360;
-		//在单位圆内并且不在圆心
-		if (r>0.000001)
-		{
-			dd[0][count] = r * sin(angle);
-			dd[1][count] = r * cos(angle);
-			count++;
-			//printf("%4f %4f \t", x, y);
-		}
+		double angle = (rand() % 3600) / 1800.0 * 3.1415926;
+		dd[0][count] = sin(angle) * 0.8;
+		dd[1][count] = cos(angle) * 0.8;
+		//printf("(%1.4f %1.4f) ", dd[0][count], dd[1][count]);
+		count++;
+	}
+	//printf("\n\r");
+}
+void DucksInPool::genDD3()
+{
+	int count = 0;
+	while (count < SIZE)
+	{
+		//printf("\n\r");
+		//生成坐标
+		double angle = (rand() % 3600) / 1800.0 * 3.1415926;
+		dd[0][count] = angle;
+		//printf("(%1.4f %1.4f) ", dd[0][count], dd[1][count]);
+		count++;
 	}
 	//printf("\n\r");
 }
@@ -111,6 +122,32 @@ void DucksInPool::sortDD()
 		}
 	}
 }
+void DucksInPool::sortDD3()
+{
+	int minp;
+	//顺次冒泡
+	//先排x
+	for (int i = 0;i < SIZE - 1;i++)
+	{
+		minp = i;
+		for (int j = i + 1;j < SIZE;j++)
+		{
+			if (dd[0][j] < dd[0][minp])
+			{
+				minp = j;
+			}
+		}
+		if (minp != i)
+		{
+			double x = dd[0][i];
+			double y = dd[1][i];
+			dd[0][i] = dd[0][minp];
+			dd[1][i] = dd[1][minp];
+			dd[0][minp] = x;
+			dd[1][minp] = y;
+		}
+	}
+}
 int DucksInPool::canInOneDD()
 {
 	// 余弦定理CosA = (c*c + b*b - a*a)/2bc
@@ -124,6 +161,21 @@ int DucksInPool::canInOneDD()
 		double c = sqrt(dd[0][i] * dd[0][i] + dd[1][i] * dd[1][i]);
 		double cosa = (c * c + b * b - a * a) / (2 * b * c);
 		total += acos(cosa);
+	}
+	if (total <= 3.1415926)
+	{
+		return 1;
+	}
+	return 0;
+}
+int DucksInPool::canInOneDD3()
+{
+	// 余弦定理CosA = (c*c + b*b - a*a)/2bc
+	double total = 0;
+	for (int i = SIZE - 1;i>=1;i--)
+	{
+		
+		total += (dd[0][i] - dd[0][i-1]);
 	}
 	if (total <= 3.1415926)
 	{
@@ -158,9 +210,9 @@ void DucksInPool::test(int TestCount)
 	int ddd = 0;
 	for (int i = 0;i < TestCount;i++)
 	{
-		genDD2();
-		sortDD();
-		int ok = canInOneDD();
+		genDD3();
+		sortDD3();
+		int ok = canInOneDD3();
 		if (ok)
 		{
 			binggo++;
