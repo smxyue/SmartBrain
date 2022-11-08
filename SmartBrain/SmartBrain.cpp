@@ -12,18 +12,18 @@
 #include "LetsMakeaDeal.h"
 #include "Tetravex.h"
 #include "SafeBoxPwd.h"
-#define GoTimes  10000
+#define GoTimes  10000000
 int main()
 {
     srand(time(0));
     std::cout << "Hello World!\n";
     //RandomGo2d myTest ;
-    //DucksInPool myTest;
+    DucksInPool myTest;
     //JingGame myTest;
     //Prisoner100 myTest;
     //BoyBoy myTest;
     //LetsMakeaDeal myTest;
     //Tetravex myTest;
-    SafeBoxPwd myTest;
-    myTest.test();
+    //SafeBoxPwd myTest;
+    myTest.test(GoTimes);
 }
