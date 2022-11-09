@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -133,6 +133,7 @@
     <ClCompile Include="LetsMakeaDeal.cpp" />
     <ClCompile Include="Prisoner100.cpp" />
     <ClCompile Include="RandomGo2d.cpp" />
+    <ClCompile Include="RandomTest.cpp" />
     <ClCompile Include="SafeBoxPwd.cpp" />
     <ClCompile Include="SmartBrain.cpp" />
     <ClCompile Include="Tetravex.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="LetsMakeaDeal.h" />
     <ClInclude Include="Prisoner100.h" />
     <ClInclude Include="RandomGo2d.h" />
+    <ClInclude Include="RandomTest.h" />
     <ClInclude Include="SafeBoxPwd.h" />
     <ClInclude Include="Tetravex.h" />
   </ItemGroup>

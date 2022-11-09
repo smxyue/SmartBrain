@@ -12,6 +12,7 @@
 #include "LetsMakeaDeal.h"
 #include "Tetravex.h"
 #include "SafeBoxPwd.h"
+#include "RandomTest.h"
 #define GoTimes  1000000
 int main()
 {
@@ -25,5 +26,7 @@ int main()
     //LetsMakeaDeal myTest;
     //Tetravex myTest;
     //SafeBoxPwd myTest;
+    //RandomTest myTest;
         myTest.test(GoTimes);
+        myTest.test2(GoTimes);
 }

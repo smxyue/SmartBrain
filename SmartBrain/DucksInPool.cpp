@@ -3,14 +3,24 @@
 #include <math.h>
 #include <stdio.h>
 
+
+void DucksInPool::printDD()
+{
+	printf("\n\r(");
+	for (int i = 0;i < SIZE;i++)
+	{
+		printf(" %f ", dd[0][i]);
+	}
+	printf(")\n\r");
+}
 void DucksInPool::genDD()
 {
 	int count = 0;
 	while (count < SIZE)
 	{
 		//生成坐标
-		double x = (double)rand() / RAND_MAX;
-		double y = (double)rand() / RAND_MAX;
+		float x = rand()%1000 / 1000.0;
+		float y = rand()%1000 / 1000.0;
 		//在单位圆内并且不在圆心
 		if (x * x + y * y < 1.0 && (x > 0 && y > 0))
 		{
@@ -53,28 +63,15 @@ void DucksInPool::genDD2()
 	{
 		//printf("\n\r");
 		//生成坐标
-		double angle = (rand() % 3600) / 1800.0 * 3.1415926;
-		dd[0][count] = sin(angle) * 0.8;
-		dd[1][count] = cos(angle) * 0.8;
+		float angle = (rand() % 1000) / 500 * 3.1415926;
+		dd[0][count] = sin(angle) ;
+		dd[1][count] = cos(angle) ;
 		//printf("(%1.4f %1.4f) ", dd[0][count], dd[1][count]);
 		count++;
 	}
 	//printf("\n\r");
 }
-void DucksInPool::genDD3()
-{
-	int count = 0;
-	while (count < SIZE)
-	{
-		//printf("\n\r");
-		//生成坐标
-		double angle = (rand() % 3600) / 1800.0 * 3.1415926;
-		dd[0][count] = angle;
-		//printf("(%1.4f %1.4f) ", dd[0][count], dd[1][count]);
-		count++;
-	}
-	//printf("\n\r");
-}
+
 void DucksInPool::sortDD()
 {
 	int minp;
@@ -122,32 +119,7 @@ void DucksInPool::sortDD()
 		}
 	}
 }
-void DucksInPool::sortDD3()
-{
-	int minp;
-	//顺次冒泡
-	//先排x
-	for (int i = 0;i < SIZE - 1;i++)
-	{
-		minp = i;
-		for (int j = i + 1;j < SIZE;j++)
-		{
-			if (dd[0][j] < dd[0][minp])
-			{
-				minp = j;
-			}
-		}
-		if (minp != i)
-		{
-			double x = dd[0][i];
-			double y = dd[1][i];
-			dd[0][i] = dd[0][minp];
-			dd[1][i] = dd[1][minp];
-			dd[0][minp] = x;
-			dd[1][minp] = y;
-		}
-	}
-}
+
 int DucksInPool::canInOneDD()
 {
 	// 余弦定理CosA = (c*c + b*b - a*a)/2bc
@@ -168,41 +140,8 @@ int DucksInPool::canInOneDD()
 	}
 	return 0;
 }
-int DucksInPool::canInOneDD3()
-{
-	// 余弦定理CosA = (c*c + b*b - a*a)/2bc
-	double total = 0;
-	for (int i = SIZE - 1;i>=1;i--)
-	{
-		
-		total += (dd[0][i] - dd[0][i-1]);
-	}
-	if (total <= 3.1415926)
-	{
-		return 1;
-	}
-	return 0;
-}
-int DucksInPool::canInOneDDD()
-{
-	// 余弦定理CosA = (c*c + b*b - a*a)/2bc
-	double total = 0;
-	for (int i = SIZE -1;i >= 0 - 1;i--)
-	{
-		double dltx = dd[0][i] - dd[0][i-1];
-		double dlty = dd[1][i] - dd[1][i-1];
-		double a = sqrt(dltx * dltx + dlty * dlty);
-		double b = sqrt(dd[0][i-1] * dd[0][i-1] + dd[1][i - 1] * dd[1][i - 1]);
-		double c = sqrt(dd[0][i] * dd[0][i] + dd[1][i] * dd[1][i]);
-		double cosa = (c * c + b * b - a * a) / (2 * b * c);
-		total += acos(cosa);
-	}
-	if (total <= 3.1415926)
-	{
-		return 1;
-	}
-	return 0;
-}
+
+
 void DucksInPool::test(int TestCount)
 {
 	printf("\n\rDucks in pool is comming...\n\r");
@@ -210,18 +149,51 @@ void DucksInPool::test(int TestCount)
 	int ddd = 0;
 	for (int i = 0;i < TestCount;i++)
 	{
-		genDD3();
-		sortDD3();
-		int ok = canInOneDD3();
+		genDD();
+		sortDD();
+		int ok = canInOneDD();
 		if (ok)
 		{
 			binggo++;
 		}
-		else
+
+
+	}
+	printf("\n\r%d tried, %d binggoed, rate %f ", TestCount, binggo, ((float)binggo / (float)TestCount));
+}
+void DucksInPool::test2(int TestCount)
+{
+	printf("\n\rDucks in pool is comming...\n\r");
+	int binggo = 0;
+	int ddd = 0;
+	for (int i = 0;i < TestCount;i++)
+	{
+		//生成一组鸭子
+		int count = 0;
+		while (count < SIZE)
 		{
-			ddd += canInOneDDD();
+			//printf("\n\r");
+			//生成坐标
+			float angle = (rand() % 10000) / 10000.0 * 360;
+			dd[0][count] = angle;
+			dd[1][count] = 0;
+			//printf("(%1.4f %1.4f) ", dd[0][count], dd[1][count]);
+			count++;
+		}
+		sortDD();
+		//printDD();
+		//printf("\n\r");
+		//是否在一个半圆
+		int ok = 0;
+		if (dd[0][SIZE - 1] - dd[0][0] <= 180)
+		{
+			ok= 1;
+		}
+		if (ok)
+		{
+			binggo++;
 		}
 
 	}
-	printf("\n\r%d tried, %d binggoed, rate %f  ddd %d", TestCount, binggo, ((float)binggo / (float)TestCount),ddd);
+	printf("\n\r%d tried, %d binggoed, rate %f", TestCount, binggo, ((float)binggo / (float)TestCount));
 }
