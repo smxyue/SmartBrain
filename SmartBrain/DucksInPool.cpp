@@ -172,24 +172,16 @@ void DucksInPool::test2(int TestCount)
 		int count = 0;
 		while (count < SIZE)
 		{
-			//printf("\n\r");
-			//生成坐标
 			float angle = (rand() % 10000) / 10000.0 * 360;
 			dd[0][count] = angle;
 			dd[1][count] = 0;
-			//printf("(%1.4f %1.4f) ", dd[0][count], dd[1][count]);
 			count++;
 		}
 		sortDD();
 		//printDD();
 		//printf("\n\r");
 		//是否在一个半圆
-		int ok = 0;
 		if (dd[0][SIZE - 1] - dd[0][0] <= 180)
-		{
-			ok= 1;
-		}
-		if (ok)
 		{
 			binggo++;
 		}
