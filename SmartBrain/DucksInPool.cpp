@@ -208,8 +208,8 @@ float DucksInPool::totalAngle()
 		{
 			prepre = SIZE - 1;
 			preAngle = dd[0][SIZE - 1] - dd[0][0];
-			if (preAngle > 180)
-				preAngle -= 180;
+			/*if (preAngle > 180)
+				preAngle -= 180;*/
 
 		}
 		else
@@ -224,8 +224,8 @@ float DucksInPool::totalAngle()
 		{
 			nextnext = 0;
 			nextAngle = dd[0][SIZE - 1] - dd[0][0];
-			if (nextAngle > 180)
-				nextAngle -= 180;
+			/*if (nextAngle > 180)
+				nextAngle -= 180;*/
 		}
 		else
 		{
@@ -261,7 +261,7 @@ void DucksInPool::test2(int TestCount)
 		int count = 0;
 		while (count < SIZE)
 		{
-			float angle = (rand() % 10000) / 10000.0 * 360;
+			float angle = (rand() % 1000) / 1000.0 * 360;
 			dd[0][count] = angle;
 			dd[1][count] = 0;
 			count++;
@@ -276,6 +276,16 @@ void DucksInPool::test2(int TestCount)
 		if (dd[0][SIZE - 1] - dd[0][0] <= 180)
 		{
 			binggo++;
+		}
+		else
+		{
+			int amm = dd[0][SIZE - 1] - dd[0][0];
+			if (amm > 180)
+				amm -= 180;
+			if (amm + (dd[0][SIZE - 1] - dd[0][1]) < 180)
+			{
+				binggo++;
+			}
 		}
 	}
 	printf("\n\r%d tried, %d binggoed, rate %f ddd: %d", TestCount, binggo, ((float)binggo / (float)TestCount),ddd);
