@@ -27,6 +27,5 @@ int main()
     //Tetravex myTest;
     //SafeBoxPwd myTest;
     //RandomTest myTest;
-        myTest.test(GoTimes);
         myTest.test2(GoTimes);
 }
