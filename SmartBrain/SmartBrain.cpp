@@ -13,7 +13,7 @@
 #include "Tetravex.h"
 #include "SafeBoxPwd.h"
 #include "RandomTest.h"
-#define GoTimes  1000000
+#define GoTimes  10000
 int main()
 {
     srand(time(0));
@@ -27,5 +27,6 @@ int main()
     //Tetravex myTest;
     //SafeBoxPwd myTest;
     //RandomTest myTest;
-        myTest.test2(GoTimes);
+      for(int i=0;i<10;i++)
+          myTest.test2(GoTimes);
 }

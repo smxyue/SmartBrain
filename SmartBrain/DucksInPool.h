@@ -14,6 +14,7 @@ class DucksInPool
 		void test(int TestCount);
 		void test2(int TestCount);
 		float totalAngle();
+		float angles();
 
 };
 

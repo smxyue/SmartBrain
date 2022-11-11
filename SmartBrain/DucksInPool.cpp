@@ -12,7 +12,6 @@ void DucksInPool::printDD()
 		printf(" %f ", dd[0][i]);
 	}
 	printf(")\n\r");
-	printf("total:%f  pre:%f\n\r", totalAngle(), dd[0][SIZE - 1] - dd[0][0]);
 
 }
 void DucksInPool::genDD()
@@ -178,18 +177,31 @@ void DucksInPool::test(int TestCount)
 	}
 	printf("\n\r%d tried, %d binggoed, rate %f ", TestCount, binggo, ((float)binggo / (float)TestCount));
 }
+float getSmallAngle(float a1, float a2)
+{
+	int val;
+	if (a1 >= a2)
+	{
+		val = a1 - a2;
+	}
+	else
+	{
+		val = a2 - a1;
+	}
+	if (val > 180)
+		val = 306 - val;
+	return val;
+}
 float DucksInPool::totalAngle()
 {
 	//首先，假定最后一个鸭子到第一个鸭子的夹角最小
 	int pre = SIZE - 1, next = 0; //pre前一个位置，往前时从此往前，next后一个位置，往后时从此往后
 	float total = dd[0][SIZE - 1] - dd[0][0];
 	if (total > 180)
-		total -= 180;
+		total = 360 - total;
 	for (int i = 1;i < SIZE ;i++)
 	{
 		float angle = dd[0][i] - dd[0][i - 1];
-		if (angle > 180)
-			angle -= 180;
 		if (angle < total)
 		{
 			//找到最小的夹角和位置
@@ -198,8 +210,10 @@ float DucksInPool::totalAngle()
 			next = i;
 		}
 	}
+	//printDD();
 	//printf("min angle [%d %d]:%f\n\r", pre, next, total);
 
+	//向小夹角方延伸
 	for (int i = 0;i < SIZE - 2;i++)
 	{
 		int prepre;
@@ -208,8 +222,8 @@ float DucksInPool::totalAngle()
 		{
 			prepre = SIZE - 1;
 			preAngle = dd[0][SIZE - 1] - dd[0][0];
-			/*if (preAngle > 180)
-				preAngle -= 180;*/
+			if (preAngle > 180)
+				preAngle = 360 - preAngle;
 
 		}
 		else
@@ -224,8 +238,8 @@ float DucksInPool::totalAngle()
 		{
 			nextnext = 0;
 			nextAngle = dd[0][SIZE - 1] - dd[0][0];
-			/*if (nextAngle > 180)
-				nextAngle -= 180;*/
+			if (nextAngle > 180)
+				nextAngle = 360 - nextAngle;
 		}
 		else
 		{
@@ -238,23 +252,38 @@ float DucksInPool::totalAngle()
 		if (preAngle < nextAngle)
 		{
 			total += preAngle;
-			//printf("pre angle [%d %d]:%f\n\r", prepre, pre, preAngle);
+			//printf("pre angle [%d %d]:%f  cancled:%f\n\r", prepre, pre, preAngle,nextAngle);
 			pre = prepre;
 		}
 		else
 		{
 			total += nextAngle;
-			//printf("next angle [%d %d]:%f\n\r", next, nextnext, nextAngle);
+			//printf("next angle [%d %d]:%f  cancled:%f\n\r", next, nextnext, nextAngle, preAngle);
 			next = nextnext;
 		}
 	}
+	//printf("total:%f  angles:%f\n\r\n\r", total, angles());
 	return total;
+}
+float DucksInPool::angles()
+{
+	if (dd[0][SIZE - 1] - dd[0][0] <= 180)
+	{
+		return dd[0][SIZE - 1] - dd[0][0];
+	}
+	else
+	{
+		float amm = dd[0][SIZE - 1] - dd[0][0];
+		float aoo = dd[0][SIZE - 1] - dd[0][1];
+		if (amm > 180)
+			amm = 360- amm;
+			return amm + aoo;
+	}
 }
 void DucksInPool::test2(int TestCount)
 {
-	printf("\n\rDucks in pool is comming...\n\r");
+	//printf("\n\rDucks in pool is comming...\n\r");
 	int binggo = 0;
-	int ddd = 0;
 	for (int i = 0;i < TestCount;i++)
 	{
 		//生成一组鸭子
@@ -272,21 +301,7 @@ void DucksInPool::test2(int TestCount)
 		//printf("\n\r");
 		//是否在一个半圆
 		if (totalAngle() <= 180)
-			ddd++;
-		if (dd[0][SIZE - 1] - dd[0][0] <= 180)
-		{
 			binggo++;
-		}
-		else
-		{
-			int amm = dd[0][SIZE - 1] - dd[0][0];
-			if (amm > 180)
-				amm -= 180;
-			if (amm + (dd[0][SIZE - 1] - dd[0][1]) < 180)
-			{
-				binggo++;
-			}
-		}
 	}
-	printf("\n\r%d tried, %d binggoed, rate %f ddd: %d", TestCount, binggo, ((float)binggo / (float)TestCount),ddd);
+	printf("\n\r%d tried, %d binggoed, rate %.3f", TestCount, binggo, ((float)binggo / (float)TestCount));
 }
