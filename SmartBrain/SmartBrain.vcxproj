@@ -134,6 +134,7 @@
     <ClCompile Include="Prisoner100.cpp" />
     <ClCompile Include="RandomGo2d.cpp" />
     <ClCompile Include="RandomTest.cpp" />
+    <ClCompile Include="Robi.cpp" />
     <ClCompile Include="SafeBoxPwd.cpp" />
     <ClCompile Include="SmartBrain.cpp" />
     <ClCompile Include="Tetravex.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="Prisoner100.h" />
     <ClInclude Include="RandomGo2d.h" />
     <ClInclude Include="RandomTest.h" />
+    <ClInclude Include="Robi.h" />
     <ClInclude Include="SafeBoxPwd.h" />
     <ClInclude Include="Tetravex.h" />
   </ItemGroup>

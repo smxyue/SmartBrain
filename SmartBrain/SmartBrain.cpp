@@ -13,13 +13,14 @@
 #include "Tetravex.h"
 #include "SafeBoxPwd.h"
 #include "RandomTest.h"
+#include "Robi.h"
 #define GoTimes  10000
 int main()
 {
     srand(time(0));
     std::cout << "Hello World!\n";
     //RandomGo2d myTest ;
-    DucksInPool myTest;
+    //DucksInPool myTest;
     //JingGame myTest;
     //Prisoner100 myTest;
     //BoyBoy myTest;
@@ -27,6 +28,7 @@ int main()
     //Tetravex myTest;
     //SafeBoxPwd myTest;
     //RandomTest myTest;
-      for(int i=0;i<10;i++)
-          myTest.test2(GoTimes);
+    Robi myTest;
+    for(int i=0;i<10;i++)
+        myTest.test(GoTimes);
 }
