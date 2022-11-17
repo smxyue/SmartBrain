@@ -1,4 +1,5 @@
 #pragma once
+#define STEPMAX 200
 class Robi
 {
 private:
@@ -15,6 +16,7 @@ public:
 	void printRobi();
 	int runM();
 	int runG();
+	int myGo();
 	void test(int nTime);
 };
 

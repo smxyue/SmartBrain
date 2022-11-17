@@ -14,7 +14,7 @@
 #include "SafeBoxPwd.h"
 #include "RandomTest.h"
 #include "Robi.h"
-#define GoTimes  10000
+#define GoTimes  10
 int main()
 {
     srand(time(0));
@@ -30,5 +30,5 @@ int main()
     //RandomTest myTest;
     Robi myTest;
     for(int i=0;i<10;i++)
-        myTest.test(GoTimes);
+        myTest.myGo();
 }
