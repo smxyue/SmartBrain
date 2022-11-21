@@ -1,5 +1,6 @@
 #pragma once
 #define STEPMAX 200
+#define TESTCOUNT 10
 class Robi
 {
 private:
@@ -24,6 +25,7 @@ public:
 
 
 	void initGenLibs();
+	void astart();
 	void randomGen(char* gen);
 	void revlution(int nTimes);
 	void newGeneration();

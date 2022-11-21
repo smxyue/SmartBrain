@@ -242,7 +242,16 @@ void Robi::initGenLibs()
 	}
 }
 
-
+void Robi::astart()
+{
+	char g0[] = { 4, 5, 4, 1, 5, 0, 4, 2, 2, 5, 2, 3, 1, 3, 5, 1, 1, 5, 5, 0, 5, 1, 2, 4, 2, 4, 5, 0, 5, 3, 5, 0, 5, 0, 1, 4, 5, 2, 0, 5, 1, 5, 2, 5, 0, 2, 4, 5, 1, 5, 4, 2, 4, 5, 2, 0, 2, 2, 5, 1, 3, 1, 1, 5, 1, 2, 4, 4, 5, 0, 5, 0, 3, 0, 5, 2, 0, 1, 5, 1, 5, 1, 3, 1, 5, 5, 4, 5, 1, 5, 3, 4, 0, 5, 4, 0, 5, 0, 3, 5, 5, 1, 5, 3, 5, 3, 1, 0, 1, 5, 0, 3, 1, 0, 1, 5, 3, 5, 4, 4, 1, 1, 2, 5, 1, 2, 1, 5, 2, 5, 1, 4, 5, 2, 0, 0, 2, 5, 1, 5, 2, 3, 3, 5, 4, 2, 0, 0, 3, 3, 5, 3, 5, 5, 1, 5, 2, 5, 3, 3, 5, 1, 5, 3, 2, 5, 5, 1, 5, 3, 5, 3, 5, 0, 4, 2, 4, 4, 6, 6, 2, 1, 4, 0, 0, 3, 5, 1, 2, 3, 3, 3, 5, 4, 6, 2, 5, 6, 6, 0 };
+	char g1[] = { 4, 5, 4, 1, 5, 0, 4, 2, 2, 5, 2, 3, 1, 3, 5, 1, 1, 5, 5, 0, 5, 1, 2, 4, 2, 4, 5, 0, 5, 3, 5, 0, 5, 0, 1, 4, 5, 2, 0, 5, 1, 5, 2, 5, 0, 2, 4, 5, 1, 5, 4, 2, 4, 5, 2, 0, 2, 2, 5, 1, 3, 1, 1, 5, 1, 2, 4, 4, 5, 0, 5, 0, 3, 0, 5, 2, 0, 1, 5, 1, 5, 1, 3, 1, 5, 5, 4, 5, 1, 5, 3, 4, 0, 5, 4, 0, 5, 0, 3, 5, 5, 1, 5, 3, 5, 3, 1, 0, 1, 5, 0, 3, 1, 0, 1, 2, 3, 5, 0, 4, 1, 1, 2, 5, 1, 2, 1, 5, 2, 5, 1, 4, 5, 2, 0, 0, 2, 5, 1, 5, 2, 3, 3, 5, 4, 2, 0, 0, 3, 3, 5, 3, 5, 5, 1, 5, 2, 5, 3, 3, 5, 1, 5, 3, 2, 5, 5, 1, 5, 3, 5, 3, 5, 0, 4, 2, 4, 0, 6, 6, 2, 1, 4, 0, 0, 3, 5, 1, 2, 3, 3, 3, 5, 4, 6, 2, 5, 6, 6, 0 };
+	for (int i = 0; i < STEPMAX; i++)
+	{
+		genLibs[0][i] = g0[i];
+		genLibs[1][i] = g1[i];
+	}
+}
 void Robi::randomGen(char* gen)
 {
 	for (int i = 0;i < STEPMAX;i++)
@@ -293,7 +302,13 @@ void Robi::getBetter()
 	int score[200];
 	for (int i = 0;i < 200;i++)
 	{
-		score[i] = run(genLibs[i]);
+		int total = 0;
+		for (int j = 0; j < TESTCOUNT; j++)
+		{
+			init();
+			total += run(genLibs[i]);
+		}
+		score[i] = total / TESTCOUNT;
 	}
 	int a0 = score[0];
 	int ai = 0;
@@ -360,10 +375,11 @@ void Robi::revlution(int nTimes)
 }
 void Robi::printGenLibItem(int p)
 {
+	printf("{");
 	for (int i = 0;i < STEPMAX;i++)
-		printf("%d", genLibs[p][i]);
+		printf("%d,", genLibs[p][i]);
 
-	printf("\n\r");
+	printf("}\n\r");
 }
 void Robi::printGenLib()
 {
@@ -376,8 +392,9 @@ void Robi::printGenLib()
 void Robi::check()
 {
 	initGenLibs();
-	randomGen(genLibs[0]);
-	randomGen(genLibs[1]);
+	//randomGen(genLibs[0]);
+	//randomGen(genLibs[1]);
+	astart();
 	int a0 = run(genLibs[0]);
 	int b0 = run(genLibs[1]);
 	printf("a0 %d  b0 %d \n\r", a0, b0);
@@ -390,4 +407,6 @@ void Robi::check()
 	a0 = run(genLibs[0]);
 	b0 = run(genLibs[1]);
 	printf("a0 %d  b0 %d \n\r", a0, b0);
+	printGenLibItem(0);
+	printGenLibItem(1);
 }
