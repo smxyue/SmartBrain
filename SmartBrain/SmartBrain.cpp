@@ -29,6 +29,5 @@ int main()
     //SafeBoxPwd myTest;
     //RandomTest myTest;
     Robi myTest;
-    for(int i=0;i<10;i++)
-        myTest.myGo();
+    myTest.check();
 }
