@@ -79,7 +79,7 @@ int Robi::goStep(int ch)
 		case 5:
 			if (matrix[currentX][currentY] == 1)
 			{
-				//matrix[currentX][currentY] = 0;
+				matrix[currentX][currentY] = 0;
 				return 10;
 			}
 			else
@@ -309,8 +309,11 @@ void Robi::getBetter()
 			genLibs[1][i] = tmp;
 		}
 		a0 = b0;
-		b0 = score[0];
-		bi = 1;
+		b0 = score[1];
+		int tmp = score[0];
+		score[0] = score[1];
+		score[1] = tmp;
+
 	}
 	for (int i = 1;i < 200;i++)
 	{
@@ -329,8 +332,8 @@ void Robi::getBetter()
 	}
 	for (int i = 2;i < 200;i++)
 	{
-		if (i != ai)
-			if (score[i] > b0)
+		if (score[i] > b0)
+			if (i != ai)
 			{
 				b0 = score[i];
 				bi = i;
@@ -379,7 +382,7 @@ void Robi::check()
 	int b0 = run(genLibs[1]);
 	printf("a0 %d  b0 %d \n\r", a0, b0);
 
-	for (int i = 0;i < 10000;i++)
+	for (int i = 0;i < 1000;i++)
 	{
 		newGeneration();
 		getBetter();
@@ -387,5 +390,4 @@ void Robi::check()
 	a0 = run(genLibs[0]);
 	b0 = run(genLibs[1]);
 	printf("a0 %d  b0 %d \n\r", a0, b0);
-
 }
