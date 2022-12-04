@@ -48,6 +48,9 @@
     <ClCompile Include="Robi.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Robi2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RandomGo2d.h">
@@ -78,6 +81,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Robi.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Robi2.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

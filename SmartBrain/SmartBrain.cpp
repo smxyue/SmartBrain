@@ -14,6 +14,7 @@
 #include "SafeBoxPwd.h"
 #include "RandomTest.h"
 #include "Robi.h"
+#include "Robi2.h"
 #define GoTimes  10
 int main()
 {
@@ -28,6 +29,7 @@ int main()
     //Tetravex myTest;
     //SafeBoxPwd myTest;
     //RandomTest myTest;
-    Robi myTest;
-        myTest.test2(10);
+    Robi2 myTest;
+    //for(int i=0;i<243;i++)
+            myTest.test(100);
 }

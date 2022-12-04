@@ -1,5 +1,5 @@
 #pragma once
-#define STEPMAX 200
+#define STEPMAX 244
 #define GenLibPool 200
 #define DATAFILE "genLibs.dat"
 class Robi
@@ -14,7 +14,7 @@ public:
 	int jarCount = 0;
 	char matrix[10][10];
 	int goStep(int ch);
-	int init();
+	void init();
 	void printRobi();
 	int runM();
 	int runG();
@@ -26,6 +26,7 @@ public:
 
 
 	void initGenLibs();
+	void printMatrix();
 	void astart();
 	int actionRate(char* gen, int ch);
 	void genActionRate(char* );
@@ -37,12 +38,19 @@ public:
 	void printGenLibItem(int p);
 	void printGenLib();
 	void check();
-	void test1();
+	void test1(int);
 	void test2(int);
+	void test3();
+	void testG(int);
 
 	void saveData();
 	int getData();
 	void printGen(char*);
 	void changeMatrix(int);
+	void sortAndSelect();
+	void exchangeGenLibItem(int, int);
+
+	int getStateNo(int x,int y);
+	int runStrategy(char*);
 };
 

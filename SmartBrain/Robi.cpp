@@ -2,37 +2,52 @@
 #include "Robi.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
-int Robi::init()
+void Robi::init()
 {
 	jarCount = 0;
 	for (int i = 0;i < 10;i++)
 	{
 		for (int j = 0;j < 10;j++)
 		{
-			if (rand() % 2 == 0)
-			{
-				matrix[i][j] = 1;
-				jarCount++;
-			}
-			else
-			{
-				matrix[i][j] = 0;
-			}
+			matrix[i][j] = 0;
+		}
+	}
+	while (jarCount < 50)
+	{
+		int x = rand() % 10;
+		int y = rand() % 10;
+		if (matrix[x][y] == 0)
+		{
+			matrix[x][y] = 1;
+			jarCount++;
 		}
 	}
 	currentX = 0;
 	currentY = 0;
-	return jarCount;
 }
 void Robi::printRobi()
 {
 	printf("\n\rJar counts:%d", jarCount);
 }
+void Robi::printMatrix()
+{
+	for (int i = 0; i < 10; i++)
+	{
+		printf("\n\r");
+		for (int j = 0; j < 10; j++)
+		{
+			printf(" %1d ", matrix[i][j]);
+		}
+	}
+}
 int Robi::goStep(int ch)
 {
 	//0=向北移动，1=向南移动，2=向东移动，3=向西移动，4=不动，5=捡拾罐子，6=随机移动
 	//格子中有罐子并且收集，10分。收集罐子而格子中又没有，-1分。如果撞到了墙，会被罚5分，并弹回原来的格子。
+	//0=向上，1=向下，2=向左，3=向右，4=不动，5=捡拾罐子，6=随机移动
+
 	switch(ch)
 	{
 		case 0:
@@ -56,9 +71,9 @@ int Robi::goStep(int ch)
 			}
 			break;
 		case 2:
-			if (currentX < 9)
+			if (currentX > 0)
 			{
-				currentX++;
+				currentX--;
 			}
 			else
 			{
@@ -66,9 +81,9 @@ int Robi::goStep(int ch)
 			}
 			break;
 		case 3:
-			if (currentX > 0)
+			if (currentX < 9)
 			{
-				currentX--;
+				currentX++;
 			}
 			else
 			{
@@ -78,9 +93,9 @@ int Robi::goStep(int ch)
 		case 4:
 			break;
 		case 5:
-			if (matrix[currentX][currentY] == 1)
+			if (matrix[currentY][currentX] == 1)
 			{
-				matrix[currentX][currentY] = 0;
+				matrix[currentY][currentX] = 0;
 				return 10;
 			}
 			else
@@ -117,7 +132,9 @@ int Robi::runM()
 int Robi::run(char* gen)
 {
 	int score = 0;
-	init();
+	currentX = 0;
+	currentY = 0;
+	//init();
 	//changeMatrix(20);
 	for (int i = 0; i < STEPMAX; i++)
 	{
@@ -250,8 +267,6 @@ int Robi::myGo()
 }
 int Robi::genWonderGen(char *myGen)
 {
-	for (int i = 0;i < STEPMAX;i++)
-		myGen[i] = 0;
 	int index = 0;
 	for (int i = 0;i < 5;i++)
 	{
@@ -260,6 +275,7 @@ int Robi::genWonderGen(char *myGen)
 			myGen[index++] = 5;
 			myGen[index++] = 2;
 		}
+		index--;
 		if (i < 4)
 		{
 			myGen[index++] = 1;
@@ -270,6 +286,7 @@ int Robi::genWonderGen(char *myGen)
 			myGen[index++] = 5;
 			myGen[index++] = 3;
 		}
+		index--;
 		if (i < 4)
 		{
 			myGen[index++] = 1;
@@ -283,8 +300,8 @@ void Robi::initGenLibs()
 {
 	for (int i = 0;i < GenLibPool;i++)
 	{
-		for (int j = 0;j < STEPMAX;j++)
-			genLibs[i][j] = 0;
+		for (int j = 0; j < STEPMAX; j++)
+			genLibs[i][j] = rand() % 6 ;
 	}
 }
 
@@ -302,7 +319,7 @@ void Robi::randomGen(char* gen)
 {
 	for (int i = 0;i < STEPMAX;i++)
 	{
-		gen[i] = rand() % 6;
+		gen[i] = rand() % 7;
 	}
 }
 
@@ -345,18 +362,18 @@ void Robi::newGeneration()
 }
 void Robi::nextEra()
 {
-	for (int j = 2; j < GenLibPool; j += 2)
+	for (int j = 1; j < GenLibPool-1; j += 2)
 	{
 		//顺次从开始到结尾组合两段基因
 		for (int k = 0; k < j; k++)
 		{
-			genLibs[j][k] = genLibs[1][k];
-			genLibs[j + 1][k] = genLibs[0][k];
+			genLibs[j+1][k] = genLibs[1][k];
+			genLibs[j + 2][k] = genLibs[0][k];
 		}
 		for (int k = j; k < STEPMAX; k++)
 		{
-			genLibs[j][k] = genLibs[0][k];
-			genLibs[j + 1][k] = genLibs[1][k];
+			genLibs[j+1][k] = genLibs[0][k];
+			genLibs[j + 2][k] = genLibs[1][k];
 		}
 		//变异
 		int p;
@@ -369,10 +386,10 @@ void Robi::nextEra()
 			{
 				change = rand() % 6;
 			}
-			genLibs[j][p] = change;
+			genLibs[j+1][p] = change;
 
 			p = rand() % STEPMAX;
-			old = genLibs[j + 1][p];
+			old = genLibs[j + 2][p];
 			change = rand() % 6;
 			while (change == old || change == 4)
 			{
@@ -388,7 +405,7 @@ void Robi::getBetter()
 	//计算所有方法的得分
 	for (int i = 0;i < GenLibPool;i++)
 	{
-		score[i] = run(genLibs[i]);
+		score[i] = runStrategy(genLibs[i]);
 	}
 	int a0 = score[0];
 	int ai = 0;
@@ -441,7 +458,7 @@ void Robi::getBetter()
 			genLibs[1][i] = genLibs[bi][i];
 		}
 	}
-	//printf("A0 %d A1 %d\n\r", a0, b0);
+	printf("A0 %d A1 %d\n\r", a0, b0);
 }
 void Robi::revlution(int nTimes)
 {
@@ -450,6 +467,7 @@ void Robi::revlution(int nTimes)
 	randomGen(genLibs[1]);
 	for (int i = 0;i < nTimes;i++)
 	{
+		init();
 		newGeneration();
 		getBetter();
 	}
@@ -468,6 +486,75 @@ void Robi::printGenLib()
 	{
 		printf("%d\n\r", i);
 		printGenLibItem(i);
+	}
+}
+
+void Robi::sortAndSelect()
+{
+	int score[GenLibPool];
+	int p[GenLibPool];
+	//计算所有方法的得分
+	for (int i = 0; i < GenLibPool; i++)
+	{
+		score[i] = runStrategy(genLibs[i]);
+		p[i] = score[i];
+		//printf("%3d:[%5d] ",i, score[i]);
+	}
+	//printf("\n\r\n\rorder\n\r");
+	//在P中排序
+	for (int i = 0; i < GenLibPool; i++)
+	{
+		int index = i;
+		int s = p[i];
+		for (int j = i + 1; j < GenLibPool; j++)
+		{
+			if (s < p[j])
+			{
+				index = j;
+				s = p[j];
+			}
+		}
+		if (index != i)
+		{
+			int tmp = p[i];
+			p[i] = s;
+			p[index] = tmp;
+		}
+		//printf("%3d:[%5d] ",i, p[i]);
+	}
+	//printf("\n\r\n\rSelect\n\r");
+	//在p中形成选择顺序队列
+	for (int i = 0; i < GenLibPool; i++)
+	{
+		for (int j = 0; j < GenLibPool; j++)
+		{
+			if (p[i] == score[j])
+			{
+				p[i] = j;
+				score[j] = -9999;
+				break;
+			}
+		}
+		//printf("%3d:[%5d] ",i,p[i]);
+	}
+	int x = ((rand() % 10000) / 10000.0) * (rand() % GenLibPool);
+	int y = ((rand() % 10000) / 10000.0) * (rand() % GenLibPool);
+	while (x == y)
+	{
+		y = ((rand() % 10000) / 10000.0) * (rand() % GenLibPool);
+	}
+	exchangeGenLibItem(0, p[x]);
+	exchangeGenLibItem(1, p[y]);
+}
+void Robi::exchangeGenLibItem(int to, int from)
+{
+	if ((to == from) || (to < 0) || (to >= GenLibPool) || (from < 0) || (from >= GenLibPool))
+		return;
+	for (int i = 0; i < STEPMAX; i++)
+	{
+		int tmp = genLibs[to][i];
+		genLibs[to][i] = genLibs[from][i];
+		genLibs[from][i] = tmp;
 	}
 }
 void Robi::check()
@@ -492,6 +579,7 @@ void Robi::check()
 	printf("\n\r");
 	for (int i = 0;i < 500;i++)
 	{
+		init();
 		nextEra();
 		//printGenLib();
 		getBetter();
@@ -525,7 +613,7 @@ int Robi::getData()
 	FILE* fp;
 	if ((fp = fopen(DATAFILE, "r")) == NULL)
 	{
-		printf("\n\rcan not open file %s", DATAFILE);
+		printf("\n\rcan not open file %s\n\r", DATAFILE);
 		return 0;
 	}
 	for (int i = 0; i < STEPMAX; i++)
@@ -596,50 +684,132 @@ void Robi::printGen(char* gen)
 	}
 	printf("}");
 }
-void Robi::test1()
+void Robi::test1(int nTimes)
 {
 	char myGen[STEPMAX+100];
 	genWonderGen(myGen);
 	if (getData() == 0)
 	{
-		randomGen(genLibs[0]);
-		randomGen(genLibs[1]);
+		initGenLibs();
 	}
-	int jarCount = init();
-	int starta0 = run(genLibs[0]);
-	int startb0 = run(genLibs[1]);
-
-	for(int j=0;j<100;j++)
+	for (int i = 0; i < STEPMAX; i++)
 	{
-		int s1 = run(myGen);
-		int s2 = runM();
-		int s3 = runG();
+		genLibs[0][i] = myGen[i];
+		genLibs[1][i] = myGen[i];
+	}
+	int total = 0;
+	int maxx = 0;
+	for(int j=0;j<nTimes;j++)
+	{
 		for (int i = 0; i < 1000; i++)
 		{
+			init();
 			nextEra();
 			//printGenLib();
-			getBetter();
+			sortAndSelect();
 			//actionRate(genLibs[0],4);
 		}
 		int a0 = run(genLibs[0]);
 		int b0 = run(genLibs[1]);
-		printf("%5d\n\r", a0);
-		//printf("Expect:%2d S1:%3d  S2:%3d S3:%3d     a0 %3d  b0 %3d   dlta0:%d   dltb0:%d\n\r", jarCount * 10 - (STEPMAX - jarCount), s1, s2, s3, a0, b0, a0 - starta0, b0 - startb0);
+		printf("%5d   %5d\n\r", a0,b0);
+		total += a0;
+		if (maxx < a0)
+			maxx = a0;
 		//printGen(genLibs[0]);
 		//printGen(genLibs[1]);
 		saveData();
-
 	}
+	printf("%d times tryed, average score:%d max %d\n\r", nTimes, total / nTimes,maxx);
+
 }
 void Robi::test2(int nTimes)
 {
+	//initGenLibs();
+	if (getData() == 0)
+	{
+		randomGen(genLibs[0]);
+		randomGen(genLibs[1]);
+	}
+	//astart();
+	init();
+	for (int n = 0; n < nTimes; n++)
+	{
+		for (int i = 0; i < 100; i++)
+		{
+			nextEra();
+			sortAndSelect();
+		}
+		int a0 = runStrategy(genLibs[0]);
+		int b0 = runStrategy(genLibs[1]);
+		printf("a0 %d  b0 %d  ", a0, b0);
+		printf("\n\r");
+	}
+	saveData();
+}
+void Robi::testG(int nTimes)
+{
+	init();
+	char numGen[244];
+	for (int i = 0; i < 244; i++)
+		numGen[i] = G[i] - '0';
 	for (int i = 0; i < nTimes; i++)
 	{
 		init();
-		currentX = rand() % 10;
-		currentY = rand() % 10;
-		int ms = runM();
-		int gs = runG();
-		printf("M:%d   G:%d\n\r", ms, gs);
+		printf("\n\r%d", runStrategy(numGen));
 	}
+}
+int Robi::getStateNo(int row,int col)
+{
+	char grid[4] = { 0,0,0,0 };//上下左右中
+	if (row == 0)
+	{
+		grid[0] = 2;
+	}
+	else
+	{
+		grid[0] = matrix[row - 1][col];
+	}
+	if (row == 9)
+	{
+		grid[1] = 2;
+	}
+	else
+	{
+		grid[1] = matrix[row + 1][col];
+	}
+	if (col == 0)
+	{
+		grid[2] = 2;
+	}
+	else
+	{
+		grid[2] = matrix[row][col - 1];
+	}
+	if (col == 9)
+	{
+		grid[3] = 2;
+	}
+	else
+	{
+		grid[3] = matrix[row][col + 1];
+	}
+	int index = grid[0] * 3 * 3 * 3 * 3 + grid[1] * 3 * 3 * 3 + grid[2] * 3 * 3 + grid[3] * 3 + matrix[row][col];
+	return index;
+}
+int Robi::runStrategy(char* gen)
+{
+	int score = 0;
+	currentX = 0;
+	currentY = 0;
+	for (int i = 0; i < STEPMAX; i++)
+	{
+		char action = gen[getStateNo(currentY, currentX)];
+		//printf("(%d，%d):%d ", currentY, currentX, action);
+		score += goStep(action);
+	}
+	return score;
+}
+void Robi::test3()
+{
+	printf("%c", G[183]);
 }
