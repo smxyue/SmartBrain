@@ -31,11 +31,35 @@ int** Robi3::generate_initial_population()
 /* 根据某一个基因（即策略表）计算适应度函数值 */
 int Robi3::evaluate_fitness(int* gene) {
     // 初始化机器人状态
-    robot.up = cells[0][1];
-    robot.left = cells[1][0];
-    robot.curr = cells[0][0];
-    robot.right = cells[1][0];
-    robot.down = cells[1][1];
+    if (row>0)
+    {
+        robot.up = cells[row-1][col];
+    }
+    else
+    {
+        robot.up = 2;
+    }
+    if (col > 0) 
+    { 
+        robot.left = cells[row][col - 1]; 
+    }
+    else 
+    { 
+        robot.left = 2; 
+    }
+    robot.curr = cells[row][col];
+    if (col < 9)
+    {
+        robot.right = cells[row][col + 1];
+    }
+    if (row < 9)
+    {
+        robot.down = cells[row + 1][col];
+    }
+    else
+    {
+        robot.down = 2;
+    }
     int score = 0;
     // 模拟机器人行动过程
     for (int i = 0; i < 200; i++) {

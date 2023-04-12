@@ -9,6 +9,8 @@
 
 class Robi3
 {
+    int row = 0;
+    int col = 0;
     /* 定义机器人状态结构体 */
     struct RobotState {
         int up, left, curr, right, down;
@@ -16,9 +18,10 @@ class Robi3
 
     /* 定义格子状态类型（0表示空，1表示垃圾，2表示边界） */
     typedef enum { EMPTY = 0, TRASH = 1, BOUNDARY = 2 } CellState;
+    typedef enum{UP,LEFT,RIGHT,DOWN,PICK} ActionCode;
 
     /* 声明全局变量：格子状态数组、机器人当前状态 */
-    CellState cells[50][50];
+    CellState cells[10][10];
     struct RobotState robot;
 
     /* 声明遗传算法需要用到的函数 */
