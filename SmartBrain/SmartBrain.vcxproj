@@ -136,8 +136,10 @@
     <ClCompile Include="RandomTest.cpp" />
     <ClCompile Include="Robi.cpp" />
     <ClCompile Include="Robi2.cpp" />
+    <ClCompile Include="Robi3.cpp" />
     <ClCompile Include="SafeBoxPwd.cpp" />
     <ClCompile Include="SmartBrain.cpp" />
+    <ClCompile Include="Test.cpp" />
     <ClCompile Include="Tetravex.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -150,7 +152,9 @@
     <ClInclude Include="RandomTest.h" />
     <ClInclude Include="Robi.h" />
     <ClInclude Include="Robi2.h" />
+    <ClInclude Include="Robi3.h" />
     <ClInclude Include="SafeBoxPwd.h" />
+    <ClInclude Include="Test.h" />
     <ClInclude Include="Tetravex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

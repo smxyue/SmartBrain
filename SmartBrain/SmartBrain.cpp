@@ -2,23 +2,13 @@
 //
 
 #include <iostream>
-#include "RandomGo2d.h"
 #include <time.h>
 #include <stdlib.h>
-#include "DucksInPool.h"
-#include "JingGame.h"
-#include "Prisoner100.h"
-#include "BoyBoy.h"
-#include "LetsMakeaDeal.h"
-#include "Tetravex.h"
-#include "SafeBoxPwd.h"
-#include "RandomTest.h"
-#include "Robi.h"
-#include "Robi2.h"
+#include "Test.h"
 #define GoTimes  10
 int main()
 {
-    srand(time(0));
+    //srand(time(0));
     std::cout << "Hello World!\n";
     //RandomGo2d myTest ;
     //DucksInPool myTest;
@@ -29,7 +19,8 @@ int main()
     //Tetravex myTest;
     //SafeBoxPwd myTest;
     //RandomTest myTest;
-    Robi2 myTest;
+    Test myTest;
     //for(int i=0;i<243;i++)
-            myTest.test(100);
+            int** m=myTest.getit();
+            myTest.showit(m);
 }

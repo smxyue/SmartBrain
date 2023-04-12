@@ -13,11 +13,15 @@ int* Robi3::generate_random_gene() {
 }
 
 /* 生成初始种群 */
-int** Robi3::generate_initial_population() {
-    static int population[POP_SIZE][GENE_SIZE];
-    for (int i = 0; i < POP_SIZE; i++) {
+int** Robi3::generate_initial_population() 
+{
+    static int** population=(int**)malloc(POP_SIZE*sizeof(int*));
+    for (int i = 0; i < POP_SIZE; i++) 
+    {
         int* gene = generate_random_gene();
-        for (int j = 0; j < GENE_SIZE; j++) {
+        population[i] = (int*)malloc(GENE_SIZE * sizeof(int));
+        for (int j = 0; j < GENE_SIZE; j++) 
+        {
             population[i][j] = gene[j];
         }
     }
@@ -102,7 +106,7 @@ void Robi3::selection(int** population, int* fitness) {
     int total_fitness = 0;
     double normalized_fitness[POP_SIZE];
     double cumulative_fitness[POP_SIZE];
-    double random_values[POP_SIZE - 1];
+    double random_values[POP_SIZE];
     for (int i = 0; i < POP_SIZE; i++) {
         total_fitness += fitness[i];
     }
