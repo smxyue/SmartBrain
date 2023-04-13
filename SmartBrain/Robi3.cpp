@@ -127,17 +127,20 @@ int Robi3::evaluate_fitness(int* gene) {
 }
 void fixFitness(int* fitness)
 {
+    //printf("fixFitness\n\r");
     int min = 0;
     for (int i = 0;i < POP_SIZE;i++)
     {
-        if (min < fitness[i])
+        if (min > fitness[i])
             min = fitness[i];
     }
     if (min < 0)
     {
         min *= -1;
-        for (int i = 0;i < POP_SIZE;i++)
+        for (int i = 0; i < POP_SIZE; i++)
+        {
             fitness[i] += min;
+        }
     }
 }
 /* 选择操作：根据归一化的适应度函数值选择优秀个体 */
@@ -153,8 +156,8 @@ void Robi3::selection(int** population, int* fitness) {
     for (int i = 0; i < POP_SIZE; i++) {
         total_fitness += fitness[i];
     }
-    if (total_fitness == 0)
-        total_fitness = 1;
+    //if (total_fitness == 0)
+    //    total_fitness = 1;
     for (int i = 0; i < POP_SIZE; i++) {
         normalized_fitness[i] = (double)fitness[i] / total_fitness;
         if (i == 0) {
@@ -173,8 +176,15 @@ void Robi3::selection(int** population, int* fitness) {
         while (random_values[i] > cumulative_fitness[selected_index]) {
             selected_index++;
         }
-        for (int j = 0; j < GENE_SIZE; j++) {
-            new_population[i][j] = population[selected_index][j];
+        if (selected_index < POP_SIZE)
+        {
+            for (int j = 0; j < GENE_SIZE; j++) {
+                new_population[i][j] = population[selected_index][j];
+             }
+        }
+        else
+        {
+            printf("out of boundary\n\r");
         }
     }
     // 将最优秀的个体直接复制到下一代
@@ -290,5 +300,7 @@ int Robi3::main()
         printf("%d ", population[0][i]);
     }
     printf("\n");
+    int s = evaluate_fitness(population[0]);
+    printf("Score:%d\n\r", s);
     return 0;
 }
