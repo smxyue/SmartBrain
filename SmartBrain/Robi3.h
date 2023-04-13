@@ -27,9 +27,14 @@ class Robi3
     /* 声明遗传算法需要用到的函数 */
     int* generate_random_gene();
     int** generate_initial_population();
+    int getCurrentState();
     int evaluate_fitness(int* gene);
     void selection(int** population, int* fitness);
     void crossover(int* parent1, int* parent2, int* child1, int* child2);
     void mutation(int* gene);
+
+    void initCells();
+    void printCells();
+public:
     int main();
 };

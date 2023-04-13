@@ -1,6 +1,7 @@
 #include "Test.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 int** Test::getit()
 {
 	static int** myarr = (int**)malloc(10 * sizeof(int*));
@@ -23,5 +24,14 @@ void Test::showit(int** arr)
 			printf("%d\t",arr[i][j]);
 		}
 		printf("\n\r");
+	}
+}
+void Test::main()
+{
+	srand(time(NULL));
+	for (int i = 0;i < 10;i++)
+	{
+		double r = (double)rand() / RAND_MAX;
+		printf("%f\n\r", r);
 	}
 }

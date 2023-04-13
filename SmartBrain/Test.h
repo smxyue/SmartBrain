@@ -4,5 +4,6 @@ class Test
 	public:
 		int** getit();
 		void showit(int**);
+		void main();
 };
 

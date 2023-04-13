@@ -7,7 +7,7 @@
 int* Robi3::generate_random_gene() {
     static int gene[GENE_SIZE];
     for (int i = 0; i < GENE_SIZE; i++) {
-        gene[i] = rand() % 3;
+        gene[i] = rand() % 5;
     }
     return gene;
 }
@@ -28,30 +28,37 @@ int** Robi3::generate_initial_population()
     return population;
 }
 
-/* 根据某一个基因（即策略表）计算适应度函数值 */
-int Robi3::evaluate_fitness(int* gene) {
-    // 初始化机器人状态
-    if (row>0)
+int Robi3::getCurrentState()
+{
+    if (row > 0)
     {
-        robot.up = cells[row-1][col];
+        robot.up = cells[row - 1][col];
     }
     else
     {
         robot.up = 2;
     }
-    if (col > 0) 
-    { 
-        robot.left = cells[row][col - 1]; 
+
+    if (col > 0)
+    {
+        robot.left = cells[row][col - 1];
     }
-    else 
-    { 
-        robot.left = 2; 
+    else
+    {
+        robot.left = 2;
     }
+
     robot.curr = cells[row][col];
+    
     if (col < 9)
     {
         robot.right = cells[row][col + 1];
     }
+    else
+    {
+        robot.right = 2;
+    }
+
     if (row < 9)
     {
         robot.down = cells[row + 1][col];
@@ -60,70 +67,79 @@ int Robi3::evaluate_fitness(int* gene) {
     {
         robot.down = 2;
     }
+
+    int index = robot.up * 81 + robot.left * 27 + robot.curr * 9 + robot.right * 3 + robot.down;
+    return index;
+}
+/* 根据某一个基因（即策略表）计算适应度函数值 */
+int Robi3::evaluate_fitness(int* gene) {
+    // 初始化机器人状态
+    row = 0;
+    col = 0;
     int score = 0;
     // 模拟机器人行动过程
     for (int i = 0; i < 200; i++) {
         // 根据当前状态获取行动策略
-        int index = robot.up * 81 + robot.left * 27 + robot.curr * 9 + robot.right * 3 + robot.down;
+        int index = getCurrentState();
         int action = gene[index]; // 0表示向上，1表示向左，2表示向右，3表示向下，4表示捡垃圾
         if (action == 0) { // 向上移动
-            if (robot.up == BOUNDARY) { // 碰到边界
+            if (row<=0) { // 碰到边界
                 score -= 5;
             }
             else {
-                robot.up = cells[i - 1][i];
-                robot.left = cells[i][i - 1];
-                robot.curr = cells[i][i];
-                robot.right = cells[i][i + 1];
-                robot.down = cells[i + 1][i];
+                row--;
             }
         }
         else if (action == 1) { // 向左移动
-            if (robot.left == BOUNDARY) { // 碰到边界
+            if (col<=0) { // 碰到边界
                 score -= 5;
             }
             else {
-                robot.up = cells[i][i - 1];
-                robot.left = cells[i + 1][i];
-                robot.curr = cells[i][i];
-                robot.right = cells[i - 1][i];
-                robot.down = cells[i][i + 1];
+                col--;
             }
         }
         else if (action == 2) { // 向右移动
-            if (robot.right == BOUNDARY) { // 碰到边界
+            if (col>=9) { // 碰到边界
                 score -= 5;
             }
             else {
-                robot.up = cells[i][i + 1];
-                robot.left = cells[i - 1][i];
-                robot.curr = cells[i][i];
-                robot.right = cells[i + 1][i];
-                robot.down = cells[i][i - 1];
+                col++;
             }
         }
         else if (action == 3) { // 向下移动
-            if (robot.down == BOUNDARY) { // 碰到边界
+            if (row >=9) { // 碰到边界
                 score -= 5;
             }
             else {
-                robot.up = cells[i + 1][i];
-                robot.left = cells[i][i + 1];
-                robot.curr = cells[i][i];
-                robot.right = cells[i][i - 1];
-                robot.down = cells[i - 1][i];
+                row++;
             }
         }
-        else { // 捡垃圾
-            if (robot.curr == TRASH) {
+        else if (action == 4) 
+        { // 捡垃圾
+            if (cells[row][col] == TRASH) 
+            {
                 score += 10;
-                cells[i][i] = EMPTY; // 将这个格子置为空
+                cells[row][col] = EMPTY; // 将这个格子置为空
             }
         }
     }
     return score;
 }
-
+void fixFitness(int* fitness)
+{
+    int min = 0;
+    for (int i = 0;i < POP_SIZE;i++)
+    {
+        if (min < fitness[i])
+            min = fitness[i];
+    }
+    if (min < 0)
+    {
+        min *= -1;
+        for (int i = 0;i < POP_SIZE;i++)
+            fitness[i] += min;
+    }
+}
 /* 选择操作：根据归一化的适应度函数值选择优秀个体 */
 void Robi3::selection(int** population, int* fitness) {
     static int new_population[POP_SIZE][GENE_SIZE];
@@ -131,9 +147,14 @@ void Robi3::selection(int** population, int* fitness) {
     double normalized_fitness[POP_SIZE];
     double cumulative_fitness[POP_SIZE];
     double random_values[POP_SIZE];
+
+    fixFitness(fitness);
+    
     for (int i = 0; i < POP_SIZE; i++) {
         total_fitness += fitness[i];
     }
+    if (total_fitness == 0)
+        total_fitness = 1;
     for (int i = 0; i < POP_SIZE; i++) {
         normalized_fitness[i] = (double)fitness[i] / total_fitness;
         if (i == 0) {
@@ -201,26 +222,35 @@ void Robi3::mutation(int* gene) {
     for (int i = 0; i < GENE_SIZE; i++) {
         double mutation_random = (double)rand() / RAND_MAX;
         if (mutation_random <= MUTATION_RATE) {
-            gene[i] = rand() % 3;
+            gene[i] = rand() % 5;
         }
     }
 }
-int Robi3::main() {
-    // 随机初始化格子状态
-    srand(time(NULL));
-    for (int i = 0; i < 50; i++) {
-        for (int j = 0; j < 50; j++) {
-            if (i == 0 && j == 0) { // 起点位置
-                cells[i][j] = EMPTY;
-            }
-            else if (i == 0 || j == 0 || i == 49 || j == 49) { // 边界
-                cells[i][j] = BOUNDARY;
-            }
-            else { // 随机填充垃圾
-                cells[i][j] = (rand() % 2 == 0) ? EMPTY : TRASH;
-            }
+void Robi3::initCells()
+{
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            cells[i][j] = (rand() % 2 == 0) ? EMPTY : TRASH;
         }
     }
+}
+void Robi3::printCells()
+{
+    for (int i = 0;i < 10;i++)
+    {
+        for (int j = 0;j < 10;j++)
+            printf("%d", cells[i][j]);
+        printf("\n\r");
+    }
+}
+int Robi3::main() 
+{
+    // 随机初始化格子状态
+    srand(time(NULL));
+    initCells();
+    printCells();
     // 初始化种群
     int** population = generate_initial_population();
     // 开始迭代
