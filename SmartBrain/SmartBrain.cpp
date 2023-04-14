@@ -6,11 +6,12 @@
 #include <stdlib.h>
 #include "Test.h"
 #include "Robi3.h"
+#include "RouletteSelect.h"
 
 #define GoTimes  10
 int main()
 {
-    //srand(time(0));
+    srand(time(0));
     std::cout << "Hello World!\n";
     //RandomGo2d myTest ;
     //DucksInPool myTest;

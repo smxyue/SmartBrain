@@ -7,7 +7,7 @@
 int* Robi3::generate_random_gene() {
     static int gene[GENE_SIZE];
     for (int i = 0; i < GENE_SIZE; i++) {
-        gene[i] = rand() % 5;
+        gene[i] = rand() % 6;
     }
     return gene;
 }
@@ -27,9 +27,11 @@ int** Robi3::generate_initial_population()
     }
     return population;
 }
-
+//分别查看当前位置及其上下左右四个位置的状态
 int Robi3::getCurrentState()
 {
+    struct RobotState robot;
+
     if (row > 0)
     {
         robot.up = cells[row - 1][col];
@@ -69,49 +71,85 @@ int Robi3::getCurrentState()
     }
 
     int index = robot.up * 81 + robot.left * 27 + robot.curr * 9 + robot.right * 3 + robot.down;
+    printf("(%d,%d)[%d,%d,%d,%d,%d]:%d\n\r",row,col,robot.up,robot.left,robot.curr,robot.right,robot.down,index);
     return index;
 }
 /* 根据某一个基因（即策略表）计算适应度函数值 */
-int Robi3::evaluate_fitness(int* gene) {
+int Robi3::evaluate_fitness(int* gene,bool debug=false) {
     // 初始化机器人状态
-    row = 0;
-    col = 0;
+    row = 5;
+    col = 5;
     int score = 0;
+
     // 模拟机器人行动过程
-    for (int i = 0; i < 200; i++) {
+    for (int i = 0; i < 200; i++) 
+    {
         // 根据当前状态获取行动策略
         int index = getCurrentState();
-        int action = gene[index]; // 0表示向上，1表示向左，2表示向右，3表示向下，4表示捡垃圾
+        char action = gene[index]; // 0表示向上，1表示向左，2表示向右，3表示向下，4表示捡垃圾
+        //printf("[%d]:%d\n\r", index, action);
         if (action == 0) { // 向上移动
             if (row<=0) { // 碰到边界
                 score -= 5;
+                if (debug)
+                {
+                    printf("[xUW]");
+                }
             }
             else {
                 row--;
+                if (debug)
+                {
+                    printf("U");
+                }
             }
         }
         else if (action == 1) { // 向左移动
             if (col<=0) { // 碰到边界
                 score -= 5;
+                if (debug)
+                {
+                    printf("[xLW]");
+                }
             }
             else {
                 col--;
+                if (debug)
+                {
+                    printf("L");
+                }
             }
         }
         else if (action == 2) { // 向右移动
             if (col>=9) { // 碰到边界
                 score -= 5;
+                if (debug)
+                {
+                    printf("[xRW]");
+                }
             }
             else {
                 col++;
+                if (debug)
+                {
+                    printf("R");
+                }
             }
         }
         else if (action == 3) { // 向下移动
             if (row >=9) { // 碰到边界
                 score -= 5;
+                if (debug)
+                {
+                    printf("[xDW]");
+                }
             }
             else {
                 row++;
+                if (debug)
+                {
+                    printf("D");
+                }
             }
         }
         else if (action == 4) 
@@ -120,60 +158,59 @@ int Robi3::evaluate_fitness(int* gene) {
             {
                 score += 10;
                 cells[row][col] = EMPTY; // 将这个格子置为空
+                if (debug)
+                {
+                    printf("P");
+                }
             }
         }
     }
     return score;
 }
-void fixFitness(int* fitness)
-{
-    //printf("fixFitness\n\r");
+
+/* 选择操作：根据归一化的适应度函数值选择优秀个体 */
+void Robi3::selection(int** population, int* fitness) {
+    static int new_population[POP_SIZE][GENE_SIZE];
+    int total_fitness = 0;
+    double cumulative_fitness[POP_SIZE];
+
+    //fixFitness(fitness);
+    //再不改变原始得分的情况下计算包括负值在内的得分的期望概率
     int min = 0;
     for (int i = 0;i < POP_SIZE;i++)
     {
         if (min > fitness[i])
             min = fitness[i];
     }
-    if (min < 0)
-    {
-        min *= -1;
-        for (int i = 0; i < POP_SIZE; i++)
-        {
-            fitness[i] += min;
-        }
-    }
-}
-/* 选择操作：根据归一化的适应度函数值选择优秀个体 */
-void Robi3::selection(int** population, int* fitness) {
-    static int new_population[POP_SIZE][GENE_SIZE];
-    int total_fitness = 0;
-    double normalized_fitness[POP_SIZE];
-    double cumulative_fitness[POP_SIZE];
-    double random_values[POP_SIZE];
 
-    fixFitness(fitness);
-    
-    for (int i = 0; i < POP_SIZE; i++) {
+    for (int i = 0; i < POP_SIZE; i++) 
+    {
         total_fitness += fitness[i];
     }
-    //if (total_fitness == 0)
-    //    total_fitness = 1;
-    for (int i = 0; i < POP_SIZE; i++) {
-        normalized_fitness[i] = (double)fitness[i] / total_fitness;
-        if (i == 0) {
-            cumulative_fitness[i] = normalized_fitness[i];
-        }
-        else {
-            cumulative_fitness[i] = cumulative_fitness[i - 1] + normalized_fitness[i];
+    if (min < 0)
+        total_fitness -= min * POP_SIZE;
+
+    if (total_fitness == 0)
+        total_fitness = 1;
+
+    for (int i = 0; i < POP_SIZE; i++) 
+    {
+        int val = fitness[i];
+        if (min < 0)
+            val -= min;
+        cumulative_fitness[i] = val / (double)total_fitness;
+        
+        if (i > 0) {
+            cumulative_fitness[i] += cumulative_fitness[i - 1] ;
         }
     }
-    for (int i = 0; i < POP_SIZE - 1; i++) {
-        random_values[i] = (double)rand() / RAND_MAX;
-    }
-    random_values[POP_SIZE - 1] = 1.0; // 最后一个随机数设为1，以确保最后一个个体一定会被选中
-    int selected_index = 0;
-    for (int i = 0; i < POP_SIZE - 1; i++) {
-        while (random_values[i] > cumulative_fitness[selected_index]) {
+    //选择一半
+    for (int i = 0; i < POP_SIZE/2 ; i++) 
+    {
+        int selected_index = 0;
+        double r = rand() / (double)(RAND_MAX + 1);
+        while (cumulative_fitness[selected_index] <r) 
+        {
             selected_index++;
         }
         if (selected_index < POP_SIZE)
@@ -184,21 +221,11 @@ void Robi3::selection(int** population, int* fitness) {
         }
         else
         {
-            printf("out of boundary\n\r");
+            printf("out of boundary %d %f %f\n\r",i,r,cumulative_fitness[POP_SIZE-1]);
         }
     }
-    // 将最优秀的个体直接复制到下一代
-    int best_index = 0;
-    for (int i = 1; i < POP_SIZE; i++) {
-        if (fitness[i] > fitness[best_index]) {
-            best_index = i;
-        }
-    }
-    for (int j = 0; j < GENE_SIZE; j++) {
-        new_population[POP_SIZE - 1][j] = population[best_index][j];
-    }
-    // 将新种群复制回原来的数组
-    for (int i = 0; i < POP_SIZE; i++) {
+     // 将新种群复制回原来的数组
+    for (int i = 0; i < POP_SIZE/2 ; i++) {
         for (int j = 0; j < GENE_SIZE; j++) {
             population[i][j] = new_population[i][j];
         }
@@ -232,7 +259,7 @@ void Robi3::mutation(int* gene) {
     for (int i = 0; i < GENE_SIZE; i++) {
         double mutation_random = (double)rand() / RAND_MAX;
         if (mutation_random <= MUTATION_RATE) {
-            gene[i] = rand() % 5;
+            gene[i] = rand() % 6;
         }
     }
 }
@@ -259,48 +286,50 @@ int Robi3::main()
 {
     // 随机初始化格子状态
     srand(time(NULL));
-    initCells();
-    printCells();
     // 初始化种群
     int** population = generate_initial_population();
     // 开始迭代
     int iteration = 0;
-    int best_fitness = -10000;
-    while (iteration < MAX_ITERATION && best_fitness < FITNESS_THRESHOLD) {
+    while (iteration < MAX_ITERATION) 
+    {
         // 计算适应度函数值
         int fitness[POP_SIZE];
         for (int i = 0; i < POP_SIZE; i++) {
-            fitness[i] = evaluate_fitness(population[i]);
+            initCells();
+            fitness[i] = evaluate_fitness(population[i],false);
         }
         // 选择操作
         selection(population, fitness);
         // 交叉和变异操作
-        for (int i = 0; i < POP_SIZE / 2; i++) {
-            int parent1_index = rand() % POP_SIZE;
-            int parent2_index = rand() % POP_SIZE;
-            crossover(population[parent1_index], population[parent2_index],
-                population[i * 2], population[i * 2 + 1]);
+        for (int i = 0; i < POP_SIZE / 2; i+=2) {
+            //int parent1_index = rand() % POP_SIZE;
+            //int parent2_index = rand() % POP_SIZE;
+            //crossover(population[parent1_index], population[parent2_index],population[i * 2], population[i * 2 + 1]);
+            crossover(population[i], population[i+1],population[i * 2], population[i * 2 + 1]);
             mutation(population[i * 2]);
             mutation(population[i * 2 + 1]);
         }
         // 记录最优适应度函数值
-        best_fitness = fitness[0];
+        int best_fitness = fitness[0];
         for (int i = 1; i < POP_SIZE; i++) {
             if (fitness[i] > best_fitness) {
                 best_fitness = fitness[i];
             }
         }
         // 打印当前迭代次数和最优适应度函数值
-        printf("Iteration: %d, Best Fitness: %d\n", iteration, best_fitness);
+        printf("%d, Best Fitness: %d\n", iteration, best_fitness);
         iteration++;
     }
     // 输出最终的最优策略表
-    printf("Best Gene:");
+    printf("Best Gene:\n\r");
     for (int i = 0; i < GENE_SIZE; i++) {
-        printf("%d ", population[0][i]);
+        printf("%d", population[0][i]);
     }
     printf("\n");
-    int s = evaluate_fitness(population[0]);
-    printf("Score:%d\n\r", s);
+    initCells();
+    printCells();
+
+    int s = evaluate_fitness(population[0],true);
+    printf("\n\rScore:%d\n\r", s);
     return 0;
 }
