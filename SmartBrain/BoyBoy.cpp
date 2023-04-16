@@ -4,7 +4,7 @@
 #include <stdio.h>
 void BoyBoy::test(int nCount)
 {
-    srand(time(0));
+    srand(time(NULL));
     int total = 0;
     int boy = 0;
     int girl = 0;
