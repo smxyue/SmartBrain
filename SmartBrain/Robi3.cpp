@@ -407,7 +407,7 @@ int Robi3::main()
             }
         }
         // 打印当前迭代次数和最优适应度函数值
-        printf("%d, Best Fitness: %d\n", iteration, best_fitness);
+        printf("%5d, Best Fitness: %d\n", iteration, best_fitness);
         iteration++;
     }
     // 输出最终的最优策略表
@@ -424,7 +424,7 @@ int Robi3::main()
     //test();
     for (int i = 0; i < 243; i++)
     {
-        printStrategy(i, population[0][i]);
+        //printStrategy(i, population[0][i]);
         //getchar();
     }
     return 0;

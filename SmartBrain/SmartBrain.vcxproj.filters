@@ -60,6 +60,9 @@
     <ClCompile Include="RouletteSelect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="CluadeRobi.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RandomGo2d.h">
@@ -102,6 +105,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="RouletteSelect.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CluadeRobi.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
