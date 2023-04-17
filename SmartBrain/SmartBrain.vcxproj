@@ -133,6 +133,7 @@
     <ClCompile Include="JingGame.cpp" />
     <ClCompile Include="LetsMakeaDeal.cpp" />
     <ClCompile Include="Prisoner100.cpp" />
+    <ClCompile Include="pyGen.cpp" />
     <ClCompile Include="RandomGo2d.cpp" />
     <ClCompile Include="RandomTest.cpp" />
     <ClCompile Include="Robi.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="JingGame.h" />
     <ClInclude Include="LetsMakeaDeal.h" />
     <ClInclude Include="Prisoner100.h" />
+    <ClInclude Include="pyGen.h" />
     <ClInclude Include="RandomGo2d.h" />
     <ClInclude Include="RandomTest.h" />
     <ClInclude Include="Robi.h" />

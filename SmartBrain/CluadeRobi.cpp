@@ -20,7 +20,7 @@ int CluadeRobi::getStatus() {
         else {
             int row = i / 3 - 1;   // 计算相对的行,列
             int col = i % 3 - 1;
-            if (row >= 0 && row < n && col >= 0 && col < m)
+            if (row >= 0 && row < NNN && col >= 0 && col < MMM)
                 val = (grid[row][col] == 1);   // 相邻位置是否有垃圾
             else
                 val = 2;   // 超出边界,表示为2
@@ -53,7 +53,7 @@ void CluadeRobi::move(int action) {
         break;
     }
     // 检查是否出界或撞墙,并相应的惩罚和位置修正
-    if (row < 0 || row >= n || col < 0 || col >= m) {
+    if (row < 0 || row >= NNN || col < 0 || col >= MMM) {
         score -= 5;
         row = curRow;
         col = curCol;
@@ -64,7 +64,7 @@ void CluadeRobi::move(int action) {
 
 // 遗传算法的进化过程
 void CluadeRobi::evolve() {
-    vector<int> policyTables;      // 种群,存储若干策略表
+    vector<int*> policyTables;      // 种群,存储若干策略表
 
     // 1. 初始化种群
     for (int i = 0; i < popSize; i++) {
@@ -73,23 +73,23 @@ void CluadeRobi::evolve() {
     }
 
     // 2. 评估种群并选择精英 
-    sort(policyTables.begin(), policyTables.end(),     // 按照得分排序种群
-        [](const int* a, const int* b) {return score(a) > score(b);});
-    vector<int> eliteTables;   // 精英策略表 
+    sort(policyTables.begin(), policyTables.end(),    
+        [](const int* a, const int* b) {return caclScore(a) > caclScore(b);}); // 按照得分排序种群
+    vector<int*> eliteTables;   // 精英策略表 
     for (int i = 0; i < eliteSize; i++) {
         eliteTables.push_back(policyTables[i]);
     }
 
     // 3. 精英随机交叉变异产生下一代 
-    vector<int> nextGen;
+    vector<int*> nextGen;
     for (int i = 0; i < popSize; i++) {
         // 以一定概率选取精英进行变异 
         if (gen() % 100 > mutationRate * 100) {
             nextGen.push_back(eliteTables[gen() % eliteSize]);
         }
         else {           // 否则交叉变异产生新的策略表
-            int table1 = eliteTables[gen() % eliteSize];
-            int table2 = eliteTables[gen() % eliteSize];
+            int* table1 = eliteTables[gen() % eliteSize];
+            int* table2 = eliteTables[gen() % eliteSize];
             // 随机交叉
             for (int j = 0; j < 243; j++) {
                 if (gen() % 2 == 0) policyTable[j] = table1[j];
@@ -108,10 +108,10 @@ void CluadeRobi::evolve() {
 }
 
 // 评估一份策略表的得分
-int CluadeRobi::score(const int* policyTable) {
-    // 用policyTable代替全局策略表
+int CluadeRobi::caclScore(const int* p) {
+    // 用p代替全局策略表
     for (int i = 0; i < 243; i++) {
-        ::policyTable[i] = policyTable[i];
+        policyTable[i] = p[i];
     }
 
     int totalScore = 0;   // 总得分
@@ -140,8 +140,9 @@ int CluadeRobi::main()
 
         cout << "最优策略表:" << endl;
         for (int i = 0; i < 243; i++) {
-            cout << ::policyTable[i] << " ";
+            cout << policyTable[i] << " ";
             if ((i + 1) % 5 == 0) cout << endl;  // 每行输出5个策略
         }
+        return 0;
     }
 
