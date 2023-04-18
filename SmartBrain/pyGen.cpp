@@ -6,16 +6,16 @@
 //初始化数据集，随机选择0-1000之间的50个数组成选择集，期望值为wanted，即总和的1/10
 void pyGen::initPool()
 {
-	printf("数据集[");
+	//printf("数据集[");
 	int sum = 0;
 	for (int i = 0; i < 50; i++)
 	{
 		pool[i] = rand()%1000;
 		sum += pool[i];
-		printf(" %d ", pool[i]);
+		//printf(" %d ", pool[i]);
 	}
 	wanted = (double)sum / 10;
-	printf("]\n\r期望值:%f\n\r",wanted);
+	printf("期望值:%f",wanted);
 }
 //从选择集中随机选择10个不同的数组成一个组合
 void pyGen::getGroup(int* group)
@@ -263,14 +263,14 @@ int pyGen::main()
 			best = i;
 	}
 	int sum = 0;
-	printf("\n\r最优选择集%d[",best);
+	//printf("\n\r最优选择集%d[",best);
 	for (int i = 0;i < 10;i++)
 	{
 		sum += population[best][i];
-		printf(" %d ", population[best][i]);
+		//printf(" %d ", population[best][i]);
 	}
 
-	printf("\n\r进化值:%d\n\r", sum);
+	printf("\t进化值:%d\t", sum);
 	randTry();
 	return 0;
 }
@@ -316,11 +316,10 @@ void pyGen::randTry()
 		}
 	}
 	int sum = 0;
-	printf("\n\r随机试探的结果：\n\r选择集[");
 	for (int i = 0;i < 10;i++)
 	{
-		printf(" %d ", pool[best[i]]);
+		//printf(" %d ", pool[best[i]]);
 		sum += pool[best[i]];
 	}
-	printf("]\n\r和:%d 差别:%d\n\r",sum, distance);
+	printf("随机试探和:%d\t差别:%d\n\r",sum, distance);
 }

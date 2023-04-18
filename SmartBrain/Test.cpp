@@ -29,9 +29,6 @@ void Test::showit(int** arr)
 void Test::main()
 {
 	srand(time(NULL));
-	for (int i = 0;i < 10;i++)
-	{
-		double r = (double)rand() / RAND_MAX;
-		printf("%f\n\r", r);
-	}
+	int** arr = getit();
+	showit(arr);
 }
