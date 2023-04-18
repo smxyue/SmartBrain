@@ -7,6 +7,7 @@
 #include "Test.h"
 #include "Robi3.h"
 #include "RouletteSelect.h"
+#include "pyGen.h"
 
 #define GoTimes  10
 int main()
@@ -22,7 +23,7 @@ int main()
     //Tetravex myTest;
     //SafeBoxPwd myTest;
     //RandomTest myTest;
-    Robi3 myTest;
+    pyGen myTest;
     //for(int i=0;i<243;i++)
     myTest.main();
 }

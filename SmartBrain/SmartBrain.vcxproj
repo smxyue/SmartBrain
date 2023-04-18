@@ -128,7 +128,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BoyBoy.cpp" />
-    <ClCompile Include="CluadeRobi.cpp" />
     <ClCompile Include="DucksInPool.cpp" />
     <ClCompile Include="JingGame.cpp" />
     <ClCompile Include="LetsMakeaDeal.cpp" />
@@ -147,7 +146,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoyBoy.h" />
-    <ClInclude Include="CluadeRobi.h" />
     <ClInclude Include="DucksInPool.h" />
     <ClInclude Include="JingGame.h" />
     <ClInclude Include="LetsMakeaDeal.h" />
