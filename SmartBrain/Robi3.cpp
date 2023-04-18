@@ -276,24 +276,40 @@ void Robi3::selection(int** population, int* fitness) {
         //printf("%d:%f\n\r", i, cumulative_fitness[i]);
     }
     //选择
-    for (int i = 0; i < POP_SIZE ; i++)
+    int newIndex = 0;
+    for (int i = 0;i < POP_SIZE / 2;i++)
     {
-        int selected_index = 0;
-        double r = rand() / (double)(RAND_MAX + 1);
-        while (cumulative_fitness[selected_index] <r) 
+        int temp[2][GENE_SIZE];
+        for (int j = 0;j < 2;j++)
         {
-            selected_index++;
+            double rnd = static_cast<double>(rand()) / double(RAND_MAX + 1);
+            for (int k = 0;k < POP_SIZE;k++)
+            {
+                if (k == 0)
+                {
+                    if (rnd < cumulative_fitness[0])
+                    {
+                        for (int m = 0;m < GENE_SIZE;m++)
+                        {
+                            temp[j][m] = population[0][m];
+                        }
+                    }
+                }
+                else if (rnd >= cumulative_fitness[k - 1] && rnd < cumulative_fitness[k])
+                {
+                    for (int m = 0;m < GENE_SIZE;m++)
+                    {
+                        temp[j][m] = population[k][m];
+                    }
+                }
+            }
         }
-        if (selected_index < POP_SIZE)
+        for (int j = 0;j < 10;j++)
         {
-            for (int j = 0; j < GENE_SIZE; j++) {
-                new_population[i][j] = population[selected_index][j];
-             }
+            new_population[newIndex][j] = temp[0][j];
+            new_population[newIndex + 1][j] = temp[1][j];
         }
-        else
-        {
-            printf("out of boundary %d %f %f\n\r",i,r,cumulative_fitness[POP_SIZE-1]);
-        }
+        newIndex += 2;
     }
      // 将新种群复制回原来的数组
     for (int i = 0; i < POP_SIZE; i++) {
@@ -307,7 +323,7 @@ void Robi3::selection(int** population, int* fitness) {
 void Robi3::crossover(int* parent1, int* parent2, int* child1, int* child2) {
     double crossover_random = (double)rand() / RAND_MAX;
     if (crossover_random <= CROSSOVER_RATE) {
-        int crossover_point = rand() % GENE_SIZE;
+        int crossover_point = rand() % (GENE_SIZE-1) +1;
         for (int i = 0; i < crossover_point; i++) {
             child1[i] = parent1[i];
             child2[i] = parent2[i];
@@ -327,12 +343,12 @@ void Robi3::crossover(int* parent1, int* parent2, int* child1, int* child2) {
 
 /* 变异操作：对某一个基因进行随机变异，改变其中的一个值 */
 void Robi3::mutation(int* gene) {
-    for (int i = 0; i < GENE_SIZE; i++) {
-        double mutation_random = (double)rand() / RAND_MAX;
-        if (mutation_random <= MUTATION_RATE) {
-            gene[i] = rand() % 7;
-        }
-    }
+   double mutation_random = (double)rand() / RAND_MAX;
+   int pos = rand() % GENE_SIZE;
+   if (mutation_random <= MUTATION_RATE) 
+   {
+       gene[pos] = rand() % 7;
+   }
 }
 void Robi3::initCells()
 {
@@ -389,12 +405,8 @@ int Robi3::main()
         // 选择操作
         selection(population, fitness);
         // 交叉和变异操作
-        for (int i = 0; i < POP_SIZE -1; i++) {
-            int parent1_index = rand() % POP_SIZE;
-            int parent2_index = rand() % POP_SIZE;
-            while(parent1_index == parent2_index)
-                parent2_index = rand() % POP_SIZE;
-            crossover(population[parent1_index], population[parent2_index],population[i], population[i + 1]);
+        for (int i = 0; i < POP_SIZE-2; i+=2) {
+            crossover(population[i], population[i+1],population[i], population[i + 1]);
             //crossover(population[i], population[i+1],population[i * 2+1], population[i * 2 + 2]);
             mutation(population[i ]);
             mutation(population[i + 1]);

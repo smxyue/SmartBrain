@@ -316,10 +316,11 @@ void pyGen::randTry()
 		}
 	}
 	int sum = 0;
+	printf("\n\r随机试探的结果：\n\r选择集[");
 	for (int i = 0;i < 10;i++)
 	{
 		printf(" %d ", pool[best[i]]);
 		sum += pool[best[i]];
 	}
-	printf("\n\rSum:%d distance:%d\n\r",sum, distance);
+	printf("]\n\r和:%d 差别:%d\n\r",sum, distance);
 }
