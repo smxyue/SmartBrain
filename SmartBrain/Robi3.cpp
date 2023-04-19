@@ -77,7 +77,7 @@ void Robi3::printStrategy(int index,char action)
     printf("%d%d%d  %C \n\r", state.left, state.curr, state.right,goAction);
     printf(" %d\n\r", state.down);
 }
-int Robi3::getStateNo()
+int Robi3::getStateNo(char workCell[][10])
 {
     char grid[4] = { 0,0,0,0};//上下左右中
     if (row == 0)
@@ -115,7 +115,7 @@ int Robi3::getStateNo()
     int index = grid[0] * 3 * 3 * 3 * 3 + grid[1] * 3 * 3 * 3 + grid[2] * 3 * 3 + grid[3] * 3 + cells[row][col];
     return index;
 }
-int Robi3::goStep(char ch)
+int Robi3::goStep(char ch,char workCell[][10])
 {
     //0=向北移动，1=向南移动，2=向东移动，3=向西移动，4=不动，5=捡拾罐子，6=随机移动
     //格子中有罐子并且收集，10分。收集罐子而格子中又没有，-1分。如果撞到了墙，会被罚5分，并弹回原来的格子。
@@ -182,33 +182,32 @@ int Robi3::goStep(char ch)
     }
     return 0;
 }
-void Robi3::cloneCells()
+void Robi3::cloneCells(char dst[][10])
 {
     for (int i = 0; i < 10; i++)
     {
         for (int j = 0; j < 10; j++)
-            workCell[i][j] = cells[i][j];
+            dst[i][j] = cells[i][j];
     }
-    workCell[0][0] = 1;
-    workCell[0][1] = 0;
-    workCell[1][0] = 1;
 }
 /* 根据某一个基因（即策略表）计算适应度函数值 */
 int Robi3::evaluate_fitness(char* gene,bool debug=false) {
-    cloneCells();
+    char workCell[10][10];
+    cloneCells(workCell);
     // 初始化机器人状态
     row = 0;
     col = 0;
     int score = 0;
-
+    
     // 模拟机器人行动过程
     for (int i = 0; i < 200; i++)
     {
         // 根据当前状态获取行动策略
-        int index = getStateNo();
+        int index = getStateNo(workCell);
         int action = gene[index]; 
-        score += goStep(action);
+        score += goStep(action,workCell);
     }
+    free(workCell);
     return score;
 }
 
@@ -370,14 +369,19 @@ void Robi3::initCells()
         }
     }
 }
-void Robi3::printCells()
+void Robi3::printCells(char workCell[][10] )
 {
     for (int i = 0;i < 10;i++)
     {
         for (int j = 0;j < 10;j++)
-            printf("%d", cells[i][j]);
+            printf("%d", workCell[i][j]);
         printf("\n\r");
     }
+}
+void Robi3::test1()
+{
+    initCells();
+    printCells(cells);
 }
 void Robi3::test()
 {
@@ -414,16 +418,22 @@ void Robi3::testG()
     row = 0;
     int score = 0;
     initCells();
-    cloneCells();
+    printCells(cells);
+    char workCell[10][10];
+    cloneCells(workCell);
     for (int i = 0; i < 200; i++)
     {
-        int stateNo = getStateNo();
+        int stateNo = getStateNo(workCell);
         char ch = G[stateNo] - '0';
-        score += goStep(ch);
+        score += goStep(ch,workCell);
+        char* ss = deIndex(stateNo);
         printStrategy(stateNo, ch);
-        printf("[%d,%d]:%d\n\r\n\r", row, col, score);
+        printf("%3d[%d,%d](%d%d%d%d%d):%d\n\r\n\r", i,row, col, ss[0], ss[1], ss[2], ss[3], ss[4], score);
     }
     printf("M mehtod socre:%d\n\r", score);
+    printf("workCell strat:\n\r");
+    printCells(workCell);
+
 }
 
 int Robi3::main() 
@@ -470,7 +480,7 @@ int Robi3::main()
     }
     printf("\n");
     initCells();
-    printCells();
+    //printCells((char**)cells);
 
     int s = evaluate_fitness(population[0],true);
     printf("\n\rScore:%d\n\r", s);

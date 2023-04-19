@@ -20,26 +20,26 @@ class Robi3
 
     /* 声明全局变量：格子状态数组、机器人当前状态 */
     char cells[10][10];
-    char workCell[10][10];
 
     /* 声明遗传算法需要用到的函数 */
     char* generate_random_gene();
     char** generate_initial_population();
-    int getStateNo();
+    int getStateNo(char[][10]);
     char* deIndex(int);
-    int goStep(char ch);
+    int goStep(char ch, char[][10]);
     int evaluate_fitness(char* gene,bool);
     void selection(char** population, int* fitness);
     void crossover(char* parent1, char* parent2, char* child1, char* child2);
     void mutation(char* gene);
 
     void initCells();
-    void cloneCells();
-    void printCells();
+    void cloneCells(char[][10]);
+    void printCells(char[][10]);
     void printStrategy(int index, char action);
 public:
     int main();
     void test();
+    void test1();
     void testG();
 
 };
