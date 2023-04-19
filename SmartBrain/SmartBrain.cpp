@@ -23,8 +23,8 @@ int main()
     //Tetravex myTest;
     //SafeBoxPwd myTest;
     //RandomTest myTest;
-    pyGen myTest;
+    Robi3 myTest;
     //for(int i=0;i<243;i++)
-    for(int i=0;i<10;i++)
-        myTest.main();
+    //for(int i=0;i<10;i++)
+        myTest.testG();
 }

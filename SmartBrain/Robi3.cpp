@@ -4,8 +4,8 @@
 #include <stdio.h>
 
 /* 生成一个随机的基因（即策略表） */
-int* Robi3::generate_random_gene() {
-    static int gene[GENE_SIZE];
+char* Robi3::generate_random_gene() {
+    static char gene[GENE_SIZE];
     for (int i = 0; i < GENE_SIZE; i++) {
         gene[i] = rand() % 7;
     }
@@ -13,13 +13,13 @@ int* Robi3::generate_random_gene() {
 }
 
 /* 生成初始种群 */
-int** Robi3::generate_initial_population() 
+char** Robi3::generate_initial_population() 
 {
-    static int** population=(int**)malloc(POP_SIZE*sizeof(int*));
+    static char** population=(char**)malloc(POP_SIZE*sizeof(char*));
     for (int i = 0; i < POP_SIZE; i++) 
     {
-        int* gene = generate_random_gene();
-        population[i] = (int*)malloc(GENE_SIZE * sizeof(int));
+        char* gene = generate_random_gene();
+        population[i] = (char*)malloc(GENE_SIZE * sizeof(char));
         for (int j = 0; j < GENE_SIZE; j++) 
         {
             population[i][j] = gene[j];
@@ -27,7 +27,17 @@ int** Robi3::generate_initial_population()
     }
     return population;
 }
-void Robi3::printStrategy(int index,int action)
+char* Robi3::deIndex(int index)
+{
+    static char state[5];
+    state[4] = index % 3;
+    state[0] = index / 81;
+    state[1] = (index % 81) / 27;
+    state[2] = (index % 27) / 9;
+    state[3] = (index % 9) / 3;
+    return state;
+}
+void Robi3::printStrategy(int index,char action)
 {
     RobotState state;
     state.curr = index % 3;
@@ -35,45 +45,48 @@ void Robi3::printStrategy(int index,int action)
     state.down = (index% 81) / 27;
     state.left = (index %27)/ 9;
     state.right = (index % 9) / 3;
-    printf(" %d\n\r", state.up);
-    printf("%d%d%d\n\r", state.left, state.curr, state.right);
-    printf(" %d\n\r", state.down);
+    //0=向上，1=向下，2=向左，3=向右，4=不动，5=捡拾罐子，6=随机移动
+
+    char goAction;
     switch (action)
     {
-        case 0:
-            printf("A");
-            break;
-        case 1:
-            printf("V");
-            break;
-        case 2:
-            printf("<");
-            break;
-        case 3:
-            printf(">");
-            break;
-        case 4:
-            printf("@");
-            break;
-        case 5:
-            printf("*");
-            break;
-        default:
-            printf("O");
-            break;
+    case 0:
+        goAction='A';
+        break;
+    case 1:
+        goAction = 'V';
+        break;
+    case 2:
+        goAction = '<';
+        break;
+    case 3:
+        goAction = '>';
+        break;
+    case 4:
+        goAction = '?';
+        break;
+    case 5:
+        goAction = 'X';
+        break;
+    default:
+        goAction = 'O';
+        break;
     }
-    printf("\n\r");
+
+    printf(" %d\n\r", state.up);
+    printf("%d%d%d  %C \n\r", state.left, state.curr, state.right,goAction);
+    printf(" %d\n\r", state.down);
 }
-int Robi3::getStateNo(char** data)
+int Robi3::getStateNo()
 {
-    char grid[4] = { 0,0,0,0 };//上下左右中
+    char grid[4] = { 0,0,0,0};//上下左右中
     if (row == 0)
     {
         grid[0] = 2;
     }
     else
     {
-        grid[0] = data[row - 1][col];
+        grid[0] = workCell[row - 1][col];
     }
     if (row == 9)
     {
@@ -81,7 +94,7 @@ int Robi3::getStateNo(char** data)
     }
     else
     {
-        grid[1] = data[row + 1][col];
+        grid[1] = workCell[row + 1][col];
     }
     if (col == 0)
     {
@@ -89,7 +102,7 @@ int Robi3::getStateNo(char** data)
     }
     else
     {
-        grid[2] = data[row][col - 1];
+        grid[2] = workCell[row][col - 1];
     }
     if (col == 9)
     {
@@ -97,12 +110,12 @@ int Robi3::getStateNo(char** data)
     }
     else
     {
-        grid[3] = data[row][col + 1];
+        grid[3] = workCell[row][col + 1];
     }
     int index = grid[0] * 3 * 3 * 3 * 3 + grid[1] * 3 * 3 * 3 + grid[2] * 3 * 3 + grid[3] * 3 + cells[row][col];
     return index;
 }
-int Robi3::goStep(int ch,char** data)
+int Robi3::goStep(char ch)
 {
     //0=向北移动，1=向南移动，2=向东移动，3=向西移动，4=不动，5=捡拾罐子，6=随机移动
     //格子中有罐子并且收集，10分。收集罐子而格子中又没有，-1分。如果撞到了墙，会被罚5分，并弹回原来的格子。
@@ -156,9 +169,9 @@ int Robi3::goStep(int ch,char** data)
     case 4:
         break;
     case 5:
-        if (data[row][col] == 1)
+        if (workCell[row][col] == 1)
         {
-            data[row][col] = 0;
+            workCell[row][col] = 0;
             return 10;
         }
         else
@@ -169,20 +182,20 @@ int Robi3::goStep(int ch,char** data)
     }
     return 0;
 }
-char** Robi3::cloneCells()
+void Robi3::cloneCells()
 {
-    static char** newCells= (char**)malloc(10*sizeof(char*));
     for (int i = 0; i < 10; i++)
     {
-        newCells[i] = (char*)malloc(10 * sizeof(char));
         for (int j = 0; j < 10; j++)
-            newCells[i][j] = cells[i][j];
+            workCell[i][j] = cells[i][j];
     }
-    return newCells;
+    workCell[0][0] = 1;
+    workCell[0][1] = 0;
+    workCell[1][0] = 1;
 }
 /* 根据某一个基因（即策略表）计算适应度函数值 */
-int Robi3::evaluate_fitness(int* gene,bool debug=false) {
-    char** rooms = cloneCells();
+int Robi3::evaluate_fitness(char* gene,bool debug=false) {
+    cloneCells();
     // 初始化机器人状态
     row = 0;
     col = 0;
@@ -192,15 +205,15 @@ int Robi3::evaluate_fitness(int* gene,bool debug=false) {
     for (int i = 0; i < 200; i++)
     {
         // 根据当前状态获取行动策略
-        int index = getStateNo(rooms);
+        int index = getStateNo();
         int action = gene[index]; 
-        score += goStep(action, rooms);
+        score += goStep(action);
     }
     return score;
 }
 
 /* 选择操作：根据归一化的适应度函数值选择优秀个体 */
-void Robi3::selection(int** population, int* fitness) {
+void Robi3::selection(char** population, int* fitness) {
     static int new_population[POP_SIZE][GENE_SIZE];
     int total_fitness = 0;
     double cumulative_fitness[POP_SIZE];
@@ -310,7 +323,7 @@ void Robi3::selection(int** population, int* fitness) {
 }
 
 /* 交叉操作：对两个父代基因进行随机交叉，生成两个新的子代基因 */
-void Robi3::crossover(int* parent1, int* parent2, int* child1, int* child2) {
+void Robi3::crossover(char* parent1, char* parent2, char* child1, char* child2) {
     double crossover_random = (double)rand() / RAND_MAX;
     if (crossover_random <= CROSSOVER_RATE) {
         int crossover_point = rand() % (GENE_SIZE-1) +1;
@@ -332,15 +345,20 @@ void Robi3::crossover(int* parent1, int* parent2, int* child1, int* child2) {
 }
 
 /* 变异操作：对某一个基因进行随机变异，改变其中的一个值 */
-void Robi3::mutation(int* gene) {
-    for (int i = 0; i < GENE_SIZE; i++)
+void Robi3::mutation(char* gene) {
+    double mutation_random = (double)rand() / RAND_MAX;
+    if (mutation_random <= MUTATION_RATE)
     {
-        double mutation_random = (double)rand() / RAND_MAX;
-        if (mutation_random <= MUTATION_RATE)
+        int index;
+        char* state;
+        do
         {
-            gene[i] = rand() % 7;
-        }
-    }
+            index = rand() % GENE_SIZE;
+            state = deIndex(index);
+         } 
+         while (state[4] == 2 || (state[0]==2 && state[1]==2) || (state[2]==2 && state[3]==2));
+         gene[index] = rand() % 7;
+      }
 }
 void Robi3::initCells()
 {
@@ -363,24 +381,47 @@ void Robi3::printCells()
 }
 void Robi3::test()
 {
-    char M[243] = "65635365625235325265635365615135315125235325215135315165635365625235325265635365605035305025235325205035305015135315125235325215135315105035305025235325205035305065635356252353252656353656151353151252353252151353151656353656252353252656353454";
+    char G[244] = "254355153256235251056355461151336154151034156110550150052030256256132252350325112052333054055231255051336154150665264150266506012264453605631520256431054354632404350334153250253251352352045150130156213436252353223135051260513356201524514343434";
+    RobotState state;
+    int useless = 0;
+    for(int i=0;i<=2;i++)
+        for(int j=0;j<=2;j++)
+            for(int l=0;l<=2;l++)
+                for(int m=0;m<=2;m++)
+                    for (int n = 0;n <= 2;n++)
+                    {
+                        state.up = i;
+                        state.down = j;
+                        state.left = l;
+                        state.right =m;
+                        state.curr = n;
+                        if (!(state.curr == 2 || (state.up == 2 && state.down == 2) || (state.left == 2 && state.right == 2)))
+                        {
+                            int index = state.up * 81 + state.down * 27 + state.left * 9 + state.right * 3 + state.curr;
+                            printStrategy(index, G[index] - '0');
+                        }
+                        else
+                        {
+                            useless++;
+                        }
+                    }
+    printf("useless code:%d", useless);
+}
+void Robi3::testG()
+{
+    char G[244] = "254355153256235251056355461151336154151034156110550150052030256256132252350325112052333054055231255051336154150665264150266506012264453605631520256431054354632404350334153250253251352352045150130156213436252353223135051260513356201524514343434";
     col = 0;
     row = 0;
     int score = 0;
-    char** data = (char**)malloc(sizeof(char*) * 10);
-
-    for (int i = 0; i < 10; i++)
-    {
-        data[i] = (char*)malloc(sizeof(char) * 10);
-        for (int j = 0; j < 10; j++)
-            data[i][j] = cells[i][j];
-    }
+    initCells();
+    cloneCells();
     for (int i = 0; i < 200; i++)
     {
-        int stateNo = getStateNo(data);
-        char ch = M[stateNo] - '0';
-        score += goStep(ch,data);
-        printf("[%d,%d]:%d\n\r", row, col, score);
+        int stateNo = getStateNo();
+        char ch = G[stateNo] - '0';
+        score += goStep(ch);
+        printStrategy(stateNo, ch);
+        printf("[%d,%d]:%d\n\r\n\r", row, col, score);
     }
     printf("M mehtod socre:%d\n\r", score);
 }
@@ -390,14 +431,14 @@ int Robi3::main()
     // 随机初始化格子状态
     srand(time(0));
     // 初始化种群
-    int** population = generate_initial_population();
+    char** population = generate_initial_population();
     // 开始迭代
     int iteration = 0;
+    initCells();
     while (iteration < MAX_ITERATION) 
     {
         // 计算适应度函数值
         int fitness[POP_SIZE];
-        initCells();
         for (int i = 0; i < POP_SIZE; i++) {
             fitness[i] = evaluate_fitness(population[i],false);
         }
@@ -419,7 +460,7 @@ int Robi3::main()
             }
         }
         // 打印当前迭代次数和最优适应度函数值
-        printf("%5d, Best Fitness: %d\n", iteration, best_fitness);
+        printf("%5d, Best Fitness: %5d\n", iteration, best_fitness);
         iteration++;
     }
     // 输出最终的最优策略表
@@ -433,11 +474,5 @@ int Robi3::main()
 
     int s = evaluate_fitness(population[0],true);
     printf("\n\rScore:%d\n\r", s);
-    //test();
-    for (int i = 0; i < 243; i++)
-    {
-        //printStrategy(i, population[0][i]);
-        //getchar();
-    }
     return 0;
 }

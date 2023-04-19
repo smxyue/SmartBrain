@@ -1,10 +1,9 @@
 #pragma once
 #define POP_SIZE 200
 #define GENE_SIZE 243
-#define MAX_ITERATION 1000
+#define MAX_ITERATION 100
 #define CROSSOVER_RATE 0.8
-#define MUTATION_RATE 0.3
-
+#define MUTATION_RATE 0.1
 
 class Robi3
 {
@@ -21,23 +20,26 @@ class Robi3
 
     /* 声明全局变量：格子状态数组、机器人当前状态 */
     char cells[10][10];
-
+    char workCell[10][10];
 
     /* 声明遗传算法需要用到的函数 */
-    int* generate_random_gene();
-    int** generate_initial_population();
-    int getStateNo(char**);
-    int goStep(int ch, char**);
-    int evaluate_fitness(int* gene,bool);
-    void selection(int** population, int* fitness);
-    void crossover(int* parent1, int* parent2, int* child1, int* child2);
-    void mutation(int* gene);
+    char* generate_random_gene();
+    char** generate_initial_population();
+    int getStateNo();
+    char* deIndex(int);
+    int goStep(char ch);
+    int evaluate_fitness(char* gene,bool);
+    void selection(char** population, int* fitness);
+    void crossover(char* parent1, char* parent2, char* child1, char* child2);
+    void mutation(char* gene);
 
     void initCells();
-    char** cloneCells();
+    void cloneCells();
     void printCells();
-    void test();
-    void printStrategy(int index,int action);
+    void printStrategy(int index, char action);
 public:
     int main();
+    void test();
+    void testG();
+
 };
