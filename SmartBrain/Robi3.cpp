@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
+#include <corecrt_math.h>
 
 /* 生成一个随机的基因（即策略表） */
 char* Robi3::generate_random_gene() {
@@ -63,10 +64,13 @@ void Robi3::printStrategy(int index,char action)
         goAction = '>';
         break;
     case 4:
-        goAction = '?';
+        goAction = '.';
         break;
     case 5:
         goAction = 'X';
+        break;
+    case 6:
+        goAction = '*';
         break;
     default:
         goAction = 'O';
@@ -112,7 +116,7 @@ int Robi3::getStateNo(char workCell[][10])
     {
         grid[3] = workCell[row][col + 1];
     }
-    int index = grid[0] * 3 * 3 * 3 * 3 + grid[1] * 3 * 3 * 3 + grid[2] * 3 * 3 + grid[3] * 3 + cells[row][col];
+    int index = grid[0] * 3 * 3 * 3 * 3 + grid[1] * 3 * 3 * 3 + grid[2] * 3 * 3 + grid[3] * 3 + workCell[row][col];
     return index;
 }
 int Robi3::goStep(char ch,char workCell[][10])
@@ -192,64 +196,61 @@ void Robi3::cloneCells(char dst[][10])
 }
 /* 根据某一个基因（即策略表）计算适应度函数值 */
 int Robi3::evaluate_fitness(char* gene,bool debug=false) {
-    char workCell[10][10];
-    cloneCells(workCell);
     // 初始化机器人状态
-    row = 0;
-    col = 0;
     int score = 0;
-    
-    // 模拟机器人行动过程
-    for (int i = 0; i < 200; i++)
+    for (int k = 0;k < 100;k++)
     {
-        // 根据当前状态获取行动策略
-        int index = getStateNo(workCell);
-        int action = gene[index]; 
-        score += goStep(action,workCell);
+        row = 0;
+        col = 0;
+        initCells();
+        // 模拟机器人行动过程
+        for (int i = 0; i < 200; i++)
+        {
+            // 根据当前状态获取行动策略
+            int index = getStateNo(cells);
+            int action = gene[index];
+            score += goStep(action, cells);
+        }
     }
-    free(workCell);
-    return score;
+    return score/100;
+}
+
+void Normalize(int*score,double*nor) {
+    int min_val = INT_MAX;
+    for (int i = 0; i < POP_SIZE; i++) {
+        if (score[i] < min_val) {
+            min_val = score[i];
+        }
+    }
+    if (min_val <= 0) { // 处理负数情况
+        min_val = abs(min_val) + 1;
+    }
+    for (int i = 0; i < POP_SIZE; i++) {
+        nor[i] = log10(score[i] + min_val);  // 使用 log 函数进行归一化
+    }
 }
 
 /* 选择操作：根据归一化的适应度函数值选择优秀个体 */
 void Robi3::selection(char** population, int* fitness) {
     static int new_population[POP_SIZE][GENE_SIZE];
-    int total_fitness = 0;
     double cumulative_fitness[POP_SIZE];
 
     //fixFitness(fitness);
-    //再不改变原始得分的情况下计算包括负值在内的得分的期望概率
-    int min = 0;
+    Normalize(fitness, cumulative_fitness);
+
+    double total = 0;
+    for (int i = 0;i < POP_SIZE;i++)
+        total += cumulative_fitness[i];
+    if (total == 0)
+        total = 1;
     for (int i = 0;i < POP_SIZE;i++)
     {
-        if (min > fitness[i])
-            min = fitness[i];
+        cumulative_fitness[i] = cumulative_fitness[i] / total;
+        if (i > 0)
+            cumulative_fitness[i] += cumulative_fitness[i - 1];
     }
-
-    for (int i = 0; i < POP_SIZE; i++) 
-    {
-        total_fitness += fitness[i];
-    }
-    if (min < 0)
-        total_fitness -= min * POP_SIZE;
-
-    if (total_fitness == 0)
-        total_fitness = 1;
-
-    for (int i = 0; i < POP_SIZE; i++) 
-    {
-        int val = fitness[i];
-        if (min < 0)
-            val -= min;
-        cumulative_fitness[i] = val / (double)total_fitness;
-        
-        if (i > 0) {
-            cumulative_fitness[i] += cumulative_fitness[i - 1] ;
-        }
-        //printf("%d:%f\n\r", i, cumulative_fitness[i]);
-    }
+    cumulative_fitness[POP_SIZE - 1] = 1.0;
     //选择
-
     int newIndex = 0;
     for (int i = 0;i < POP_SIZE / 2;i++)
     {
@@ -280,7 +281,6 @@ void Robi3::selection(char** population, int* fitness) {
         }
 
         //交叉
-        int crossed[2][GENE_SIZE];
         double crossRnd = static_cast<double>(rand()) / (double)(RAND_MAX + 1);
 
         if (crossRnd < CROSSOVER_RATE)
@@ -288,27 +288,22 @@ void Robi3::selection(char** population, int* fitness) {
             int rnd = (rand() % (GENE_SIZE - 1)) + 1;
             for (int j = 0; j < rnd; j++)
             {
-                crossed[0][j] = temp[0][j];
-                crossed[1][j] = temp[1][j];
+                new_population[newIndex][j] = temp[0][j];
+                new_population[newIndex + 1][j] = temp[1][j];
             }
             for (int j = rnd; j < GENE_SIZE; j++)
             {
-                crossed[0][j] = temp[1][j];
-                crossed[1][j] = temp[0][j];
+                new_population[newIndex][j] = temp[1][j];
+                new_population[newIndex + 1][j] = temp[0][j];
             }
         }
         else
         {
             for (int j = 0; j < GENE_SIZE; j++)
             {
-                crossed[0][j] = temp[0][j];
-                crossed[1][j] = temp[1][j];
+                new_population[newIndex][j] = temp[0][j];
+                new_population[newIndex + 1][j] = temp[1][j];
             }
-        }
-        for (int j = 0;j < GENE_SIZE;j++)
-        {
-            new_population[newIndex][j] = crossed[0][j];
-            new_population[newIndex + 1][j] = crossed[1][j];
         }
         newIndex += 2;
 
@@ -345,8 +340,10 @@ void Robi3::crossover(char* parent1, char* parent2, char* child1, char* child2) 
 
 /* 变异操作：对某一个基因进行随机变异，改变其中的一个值 */
 void Robi3::mutation(char* gene) {
-    double mutation_random = (double)rand() / RAND_MAX;
-    if (mutation_random <= MUTATION_RATE)
+    int mut_count = (int)GENE_SIZE * MUTATION_RATE;
+    if (mut_count <= 0)
+        mut_count = 1;
+    for (int i = 0;i < mut_count;i++)
     {
         int index;
         char* state;
@@ -354,10 +351,16 @@ void Robi3::mutation(char* gene) {
         {
             index = rand() % GENE_SIZE;
             state = deIndex(index);
-         } 
-         while (state[4] == 2 || (state[0]==2 && state[1]==2) || (state[2]==2 && state[3]==2));
-         gene[index] = rand() % 7;
-      }
+        } while (state[4] == 2 || (state[0] == 2 && state[1] == 2) || (state[2] == 2 && state[3] == 2));
+        //printf("%d(%d%d%d%d%d)\n\r", i, state[0], state[1], state[2], state[3], state[4]);
+        int newAction = rand() % 7;
+        //while (gene[index] == newAction || newAction == 4 || newAction == 6)
+        while (gene[index] == newAction)
+        {
+            newAction = rand() % 7;
+        }
+        gene[index] = newAction;
+    }
 }
 void Robi3::initCells()
 {
@@ -365,8 +368,19 @@ void Robi3::initCells()
     {
         for (int j = 0; j < 10; j++)
         {
-            cells[i][j] = (rand() % 2 == 0) ? 0 : 1;
+            cells[i][j] = 0;
         }
+    }
+    for (int i = 0;i < 50;i++)
+    {
+        int x = rand() % 10;
+        int y = rand() % 10;
+        while (cells[y][x] == 1)
+        {
+            x = rand() % 10;
+            y = rand() % 10;
+        }
+        cells[y][x] = 1;
     }
 }
 void Robi3::printCells(char workCell[][10] )
@@ -378,10 +392,31 @@ void Robi3::printCells(char workCell[][10] )
         printf("\n\r");
     }
 }
+void Robi3::reversCell(char ws[][10])
+{
+    for (int i = 0;i < 10;i++)
+    {
+        for (int j = 0;j < 10;j++)
+        {
+            if (ws[i][j] == 0)
+                ws[i][j] = 1;
+            else
+                ws[i][j] = 0;
+        }
+    }
+    ws[0][0] = 1;
+}
 void Robi3::test1()
 {
-    initCells();
-    printCells(cells);
+    char** population = generate_initial_population();
+    for (int i = 0;i < POP_SIZE;i++)
+    {
+        printf("\n\r");
+        for (int j = 0;j < GENE_SIZE;j++)
+        {
+            printf("%d", population[i][j]);
+        }
+    }
 }
 void Robi3::test()
 {
@@ -413,12 +448,12 @@ void Robi3::test()
 }
 void Robi3::testG()
 {
+    char M[244] = "65635365625235325265635365615135315125235325215135315165635365625235325265635365605035305025235325205035305015135315125235325215135315105035305025235325205035305065635356252353252656353656151353151252353252151353151656353656252353252656353454";
     char G[244] = "254355153256235251056355461151336154151034156110550150052030256256132252350325112052333054055231255051336154150665264150266506012264453605631520256431054354632404350334153250253251352352045150130156213436252353223135051260513356201524514343434";
     col = 0;
     row = 0;
     int score = 0;
     initCells();
-    printCells(cells);
     char workCell[10][10];
     cloneCells(workCell);
     for (int i = 0; i < 200; i++)
@@ -426,14 +461,27 @@ void Robi3::testG()
         int stateNo = getStateNo(workCell);
         char ch = G[stateNo] - '0';
         score += goStep(ch,workCell);
-        char* ss = deIndex(stateNo);
-        printStrategy(stateNo, ch);
-        printf("%3d[%d,%d](%d%d%d%d%d):%d\n\r\n\r", i,row, col, ss[0], ss[1], ss[2], ss[3], ss[4], score);
     }
-    printf("M mehtod socre:%d\n\r", score);
-    printf("workCell strat:\n\r");
-    printCells(workCell);
+    printf("G mehtod socre:%d\n\r", score);
+    if (score < 0)
+    {
+        printf("cells state:\n\r");
+        printCells(cells);
+        printf("\n\r\n\r");
+        cloneCells(workCell);
+        col = 0;
+        row = 0;
+        score = 0;
+        for (int i = 0; i < 200; i++)
+        {
+            int stateNo = getStateNo(workCell);
+            char ch = G[stateNo] - '0';
+            score += goStep(ch, workCell);
+            printStrategy(stateNo, ch);
+            printf("\n\r%3d(%d %d):%d\n\r\n\r", i, row, col, score);
+        }
 
+    }
 }
 
 int Robi3::main() 
@@ -483,6 +531,186 @@ int Robi3::main()
     //printCells((char**)cells);
 
     int s = evaluate_fitness(population[0],true);
-    printf("\n\rScore:%d\n\r", s);
+    printf("\n\rScore:%d\n\r\n\r\n\r", s);
+    col = 0;
+    row = 0;
+    int score = 0;
+    for (int i = 0;i < 0;i++)
+    {
+        int index = getStateNo(cells);
+        int ch = population[0][index];
+        score += goStep(ch, cells);
+        printStrategy(index, ch);
+        printf("\n\r[%d，%d]:%d\n\r\n\r", row, col, score);
+    }
     return 0;
 }
+
+/*
+* 
+https://blog.csdn.net/lynn0085/article/details/79016012
+
+https://blog.csdn.net/huwp001/article/details/114627398
+
+# -*- coding: utf-8 -*-
+"""
+func.py
+Created on Tue Mar  9 17:40:51 2021
+
+@author: huwp001
+"""
+import numpy as np
+
+# 执行策略
+#  罗比有7种可能选择：北移、南移、东移、西移、随机移动、不动、收集罐子
+#   0=向北移动，1=向南移动，2=向东移动，3=向西移动，4=不动，5=捡拾罐子，6=随机移动
+#  每个动作都会受到奖赏或惩罚。如果罗比所在的格子中有罐子并且收集起来了，就会得到10分的奖赏。
+#  如果进行收集罐子的动作而格子中又没有罐子，就会被罚1分。如果撞到了墙，会被罚5分，并弹回原来的格子。
+def people_work(people, pts):
+    haspts = np.array([[999,999],[888,888]])
+    p = np.array([1,1])
+    lines = list()
+    lines.append(p)
+    score = 0   #分数
+    sidect = 0  #撞墙次数
+    failcolct = 0   #拾取失败的次数
+    for step in people:
+        if step==6:
+            step = np.random.randint(4, size=1)[0]
+        p2 = p
+        if step==0:
+            p2 = p + [0,1]
+        if step==1:
+            p2 = p + [0,-1]
+        if step==2:
+            p2 = p + [1,0]
+        if step==3:
+            p2 = p + [-1,0]
+        # 检测p2 是否撞墙
+        if p2.__contains__(0) or p2.__contains__(11):
+            score = score - 5
+            lines.append(p2)
+            lines.append(p)
+            sidect = sidect + 1
+        else:
+            p = p2
+            lines.append(p)
+        if step==4:
+            p2 = p
+        if step==5:
+            if (pts == p2).all(1).any() and (haspts == p2).all(1).any()==False:
+                # 有物体
+                score = score + 10
+                haspts = np.row_stack((haspts, p2))
+            else:
+                score = score - 1
+                failcolct = failcolct + 1
+    #print('拾取易拉罐%d次，撞墙%d次， 拾取失败%d次 ' % (len(haspts)-2, sidect, failcolct))
+    #print(haspts)
+    return lines, score
+
+def mutation(gene):
+    #基因突变， 基因链上随机取3个值
+    for i in range(3):
+        ixs = np.random.randint(len(gene), size=1)[0]
+        gene[ixs] = np.random.randint(7, size=1)[0]
+    return gene
+
+def makelove(p1, p2):
+    # 基因重组, 随机得到一个拆分点，重新组合
+    s1 = np.random.randint(len(p1), size=1)[0]
+    c1 = mutation(np.append(p1[0:s1],p2[s1:]))
+    c2 = mutation(np.append(p2[:s1],p1[s1:]))
+    return c1, c2
+
+# 构造房间，放置垃圾易拉罐，注意放置了50%的易拉罐
+def room():
+    xxs = list()
+    for i in range(10):
+        xx = np.linspace(1, 1, 5)
+        d = np.pad(xx,(0,5),'constant',constant_values=(0,0))
+        np.random.shuffle(d)
+        xxs.append(d)
+    k = 0
+    xxs = np.array(xxs)
+    gbpoints = list()
+    for x in np.nditer(xxs):
+        if x==1:
+            # mark
+            a = int(k / xxs.shape[1])   # row
+            b = k % xxs.shape[1]    # col
+            gbpoints.append([b, a])
+        k=k+1
+    # 垃圾的坐标从 1 开始
+    pts = np.array(gbpoints) + [1,1]
+    return pts
+
+# 这就是生活， 有能力才可以结婚，生娃娃，否则被淘汰
+def life(peoples):
+    scores = list()
+    for i in range(len(peoples)):
+        # 每个人要工作100次，取平均值
+        #print('people epoch=%d ix=%d' %(epoch_num, i))
+        if i % 10==0:
+            print('.', end=(''))
+        a = list()
+        for k in range(10):
+            lines, score = people_work(peoples[i], room())
+            a.append(score)
+        score = np.average(a)
+        scores.append(score)
+    scores = np.array(scores)
+    print()
+    print('这一代人的平均工作能力 %.3f' % np.average(scores))
+    args = np.argsort(scores)  # 按工作能力排序
+
+    # 随机寻找优秀的人去组合，结婚生子
+    p = [0.1, 0.2, 0.3, 0.4]
+    childrens = list()
+    argss = np.split(args,4)    #人群拆分为4部分
+    for i in range(100):
+        k = int(np.random.choice([0,1,2,3], 1, replace=True, p=p))
+        spouse = np.random.choice(argss[k], 2, replace=True)
+        man = peoples[spouse[0]]
+        woman = peoples[spouse[1]]
+        c1, c2 = makelove(man, woman)
+        childrens.append(c1)
+        childrens.append(c2)
+    return childrens
+
+
+
+    # -*- coding: utf-8 -*-
+"""
+Created on Tue Mar  9 15:15:42 2021
+
+@author: huwp001
+"""
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+from func import life
+
+# define
+
+#基因长度
+GENE_LEN = 243
+
+#  初始化，女娲造人200个，基因随机
+peoples = list()
+for i in range(200):
+    peoples.append(np.random.randint(0, 7, GENE_LEN))
+
+
+# 暂定繁衍1000代
+for epoch_num in range(1000):
+    print('开始繁衍第%d代' % epoch_num )
+    np.savetxt('peoples%d.txt' % epoch_num ,np.array(peoples),fmt='%d')
+    peoples = life(peoples)
+    epoch_num = epoch_num +1
+
+
+
+*/

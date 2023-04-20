@@ -26,5 +26,5 @@ int main()
     Robi3 myTest;
     //for(int i=0;i<243;i++)
     //for(int i=0;i<10;i++)
-        myTest.testG();
+        myTest.main();
 }

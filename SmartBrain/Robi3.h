@@ -1,9 +1,9 @@
 #pragma once
 #define POP_SIZE 200
 #define GENE_SIZE 243
-#define MAX_ITERATION 100
+#define MAX_ITERATION 1000
 #define CROSSOVER_RATE 0.8
-#define MUTATION_RATE 0.1
+#define MUTATION_RATE 0.01
 
 class Robi3
 {
@@ -36,6 +36,7 @@ class Robi3
     void cloneCells(char[][10]);
     void printCells(char[][10]);
     void printStrategy(int index, char action);
+    void reversCell(char[][10]);
 public:
     int main();
     void test();
