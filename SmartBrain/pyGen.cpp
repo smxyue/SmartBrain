@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <corecrt_math.h>
 #include <stdio.h>
+#include <vector>
 
 //初始化数据集，随机选择0-1000之间的50个数组成选择集，期望值为wanted，即总和的1/10
 void pyGen::initPool()
@@ -96,7 +97,12 @@ void pyGen::select()
 		for (int j = 0;j < 2;j++)
 		{
 			double rnd = static_cast<double>(rand()) / double(RAND_MAX + 1);
-			for (int k = 0;k < POP_SIZE;k++)
+			int index = 0;
+			while (cumulative_fitness[index] < rnd && index <POP_SIZE)
+				index++;
+			for (int m = 0; m < 10; m++)
+				temp[j][m] = population[index][m];
+			/*for (int k = 0;k < POP_SIZE;k++)
 			{
 				if (k == 0)
 				{
@@ -115,7 +121,7 @@ void pyGen::select()
 						temp[j][m] = population[k][m];
 					}
 				}
-			}
+			}*/
 		}
 		//交叉
 		int crossed[2][10];
@@ -240,9 +246,24 @@ void pyGen::variation()
 		double rnd = rand() / (double)(RAND_MAX + 1);
 		if (rnd < MUTATION_RATE)
 		{
-			int index = rand() % 10;
-			int newGuy = rand() % 50;
-			population[i][index] = pool[newGuy];
+			int index = rand() % 10;//
+			std::vector<int> waitList;
+			for(int j=0;j<50;j++)
+			{
+				bool is_dup = false;
+				for (int k = 0; k < 10; k++)	//检查所有已经存在的项
+				{
+					if (population[i][k] == pool[j])
+					{
+						is_dup = true;
+					}
+				}
+				if (!is_dup)
+				{
+					waitList.push_back(pool[j]);
+				}
+			} 
+			population[i][index] = waitList[rand() % waitList.size()];
 		}
 	}
 }

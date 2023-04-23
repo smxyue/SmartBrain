@@ -198,7 +198,7 @@ void Robi3::cloneCells(char dst[][10])
 int Robi3::evaluate_fitness(char* gene,bool debug=false) {
     // 初始化机器人状态
     int score = 0;
-    for (int k = 0;k < 100;k++)
+    for (int k = 0;k < 200;k++)
     {
         row = 0;
         col = 0;
@@ -209,17 +209,19 @@ int Robi3::evaluate_fitness(char* gene,bool debug=false) {
             // 根据当前状态获取行动策略
             int index = getStateNo(cells);
             int action = gene[index];
-            score += goStep(action, cells);
+            int fen =goStep(action, cells);
+            if (fen > 0)
+                score += fen;
         }
     }
-    return score/100;
+    return score/200;
 }
 
 void Normalize(int*score,double*nor) {
     int min_val = INT_MAX;
     for (int i = 0; i < POP_SIZE; i++) {
         if (score[i] < min_val) {
-            min_val = score[i];
+            score[i];
         }
     }
     if (min_val <= 0) { // 处理负数情况

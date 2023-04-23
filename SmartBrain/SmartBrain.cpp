@@ -8,6 +8,7 @@
 #include "Robi3.h"
 #include "RouletteSelect.h"
 #include "pyGen.h"
+#include "Robi4.h"
 
 #define GoTimes  10
 int main()
@@ -25,6 +26,6 @@ int main()
     //RandomTest myTest;
     Robi3 myTest;
     //for(int i=0;i<243;i++)
-    //for(int i=0;i<10;i++)
+    //for(int i=0;i<100;i++)
         myTest.main();
 }

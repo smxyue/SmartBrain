@@ -60,10 +60,10 @@
     <ClCompile Include="RouletteSelect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CluadeRobi.cpp">
+    <ClCompile Include="pyGen.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="pyGen.cpp">
+    <ClCompile Include="Robi4.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,10 +110,10 @@
     <ClInclude Include="RouletteSelect.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="CluadeRobi.h">
+    <ClInclude Include="pyGen.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="pyGen.h">
+    <ClInclude Include="Robi4.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
