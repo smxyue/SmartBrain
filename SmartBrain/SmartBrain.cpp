@@ -24,8 +24,8 @@ int main()
     //Tetravex myTest;
     //SafeBoxPwd myTest;
     //RandomTest myTest;
-    Robi3 myTest;
+    Robi4 myTest;
     //for(int i=0;i<243;i++)
-    //for(int i=0;i<100;i++)
+    //for(int i=0;i<1000;i++)
         myTest.main();
 }
