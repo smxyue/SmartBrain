@@ -1,5 +1,6 @@
 #include "Robi4.h"
 #include <vector>
+#include <algorithm>
 
 std::vector<int>* Robi4::stateSet()
 {
@@ -301,7 +302,21 @@ void Robi4::Normalize(int* score, double* nor) {
 		nor[i] = (double)(score[i] - min_val) / (max_val - min_val);
 	}
 }
-
+void Robi4::printFittness(double* fitness)
+{
+	printf("\n\r\tfittness\n\r");
+	vector<pair<double, int>> v;
+	for (int i = 0; i < POP_SIZE; i++)
+	{
+		v.push_back(make_pair(fitness[i], i));
+	}
+	sort(v.begin(), v.end());
+	for (int i = 0; i < POP_SIZE; i++)
+	{
+		printf("%3d:%.5f",v[i].second, v[i].first);
+	}
+	printf("\n\r");
+}
 /* 选择操作：根据归一化的适应度函数值选择优秀个体 */
 void Robi4::selection(char** population, int* fitness) {
 	static int new_population[POP_SIZE][GENE_SIZE];
@@ -309,7 +324,13 @@ void Robi4::selection(char** population, int* fitness) {
 
 	//fixFitness(fitness);
 	Normalize(fitness, cumulative_fitness);
-
+	vector<pair<double, int>> v;
+	for (int i = 0; i < POP_SIZE; i++)
+	{
+		v.push_back(make_pair(fitness[i], i));
+	}
+	sort(v.begin(), v.end());
+	printFittness(cumulative_fitness);
 	double total = 0;
 	for (int i = 0;i < POP_SIZE;i++)
 		total += cumulative_fitness[i];
@@ -328,6 +349,7 @@ void Robi4::selection(char** population, int* fitness) {
 		double rnd = static_cast<double>(rand()) / double(RAND_MAX + 1);
 		while (rnd > cumulative_fitness[selected] && selected < POP_SIZE-1)
 			selected++;
+		printf("%d:%d ", selected,v[selected].second);
 		for (int j = 0; j < GENE_SIZE; j++)
 		{
 				new_population[i][j] = population[selected][j];
@@ -477,7 +499,7 @@ void Robi4::test()
 	char** population = generate_initial_population();
 
 	int fitness[POP_SIZE];
-	for (int a = 0;a < 10;a++)
+	for (int a = 0;a < 1;a++)
 	{
 		for (int i = 0; i < POP_SIZE; i++) {
 			fitness[i] = evaluate_fitness(population[i]);
@@ -485,7 +507,7 @@ void Robi4::test()
 		// 选择操作
 		selection(population, fitness);
 		for (int i = 0; i < POP_SIZE - 2; i += 2) {
-			crossover(population[i], population[i + 1]);
+			//crossover(population[i], population[i + 1]);
 			//mutation(population[i]);
 			//mutation(population[i + 1]);
 		}
@@ -493,6 +515,6 @@ void Robi4::test()
 	}
 	for (int i = 0;i < POP_SIZE;i++)
 	{
-		printf("%4d: %.5f\n\r",i,genLikes(population[0],population[i]));
+		//printf("%4d: %.5f\n\r",i,genLikes(population[0],population[i]));
 	}
 }

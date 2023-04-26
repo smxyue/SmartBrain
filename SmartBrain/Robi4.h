@@ -1,5 +1,5 @@
 #pragma once
-#define POP_SIZE 200
+#define POP_SIZE 10
 #define GENE_SIZE 243
 #define MAX_ITERATION 100
 #define CROSSOVER_RATE 0.8
@@ -29,7 +29,7 @@ class Robi4
 	void mutation(char* gene);
 	void printStrategy(int index, char action);
 	void printPopulation(char**popluation);
-
+	void printFittness(double* score);
 public:
 	void test();
 	void testG();

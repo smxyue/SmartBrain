@@ -27,5 +27,5 @@ int main()
     Robi4 myTest;
     //for(int i=0;i<243;i++)
     //for(int i=0;i<1000;i++)
-        myTest.main();
+        myTest.test();
 }
