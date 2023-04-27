@@ -313,7 +313,7 @@ void Robi4::printFittness(double* fitness)
 	sort(v.begin(), v.end());
 	for (int i = 0; i < POP_SIZE; i++)
 	{
-		printf("%3d:%.5f",v[i].second, v[i].first);
+		printf("[%3d:%.5f] ",v[i].second, v[i].first);
 	}
 	printf("\n\r");
 }
@@ -322,34 +322,34 @@ void Robi4::selection(char** population, int* fitness) {
 	static int new_population[POP_SIZE][GENE_SIZE];
 	double cumulative_fitness[POP_SIZE];
 
-	//fixFitness(fitness);
 	Normalize(fitness, cumulative_fitness);
 	vector<pair<double, int>> v;
+	vector<int> sidx;
 	for (int i = 0; i < POP_SIZE; i++)
 	{
-		v.push_back(make_pair(fitness[i], i));
+		v.push_back(make_pair(cumulative_fitness[i], i));
 	}
 	sort(v.begin(), v.end());
-	printFittness(cumulative_fitness);
-	double total = 0;
-	for (int i = 0;i < POP_SIZE;i++)
-		total += cumulative_fitness[i];
-	if (total == 0)
-		total = 1;
-	for (int i = 0;i < POP_SIZE;i++)
-	{
-		cumulative_fitness[i] = cumulative_fitness[i] / total;
-		if (i > 0)
-			cumulative_fitness[i] += cumulative_fitness[i - 1];
-	}
+	printFittness(cumulative_fitness);	
 	//选择
-	for (int i = 0;i < POP_SIZE;i++)
+	//精英
+	for (int i = POP_SIZE-ELITE_SIZE-1;i<POP_SIZE;i++)
+	{
+		for (int j = 0;j < GENE_SIZE;j++)
+			new_population[i][j] = population[v[i].second][j];
+		//printf("%d:%f ", v[i].second,v[i].first);
+
+	}
+	//非精英
+	for (int i = ELITE_SIZE;i < POP_SIZE;i++)
 	{
 		int selected = 0;
 		double rnd = static_cast<double>(rand()) / double(RAND_MAX + 1);
-		while (rnd > cumulative_fitness[selected] && selected < POP_SIZE-1)
+		while (rnd > v[selected].first && selected < POP_SIZE-1)
 			selected++;
-		printf("%d:%d ", selected,v[selected].second);
+		//printf("%3d: %.3f\n\r", v[selected].second,v[selected].first);
+		selected = v[selected].second;
+		sidx.push_back(selected);
 		for (int j = 0; j < GENE_SIZE; j++)
 		{
 				new_population[i][j] = population[selected][j];
@@ -361,6 +361,9 @@ void Robi4::selection(char** population, int* fitness) {
 			population[i][j] = new_population[i][j];
 		}
 	}
+	sort(sidx.begin(), sidx.end());
+	for (int i = 0;i < POP_SIZE - ELITE_SIZE - 1;i++)
+		printf(" %d ", sidx.at(i));
 }
 /* 交叉操作：对两个父代基因进行随机交叉，生成两个新的子代基因 */
 void Robi4::crossover(char* parent1, char* parent2) 
@@ -464,7 +467,7 @@ int Robi4::main()
 		selection(population, fitness);
 
 		// 交叉和变异操作
-		for (int i = 0; i < POP_SIZE - 2; i += 2) {
+		for (int i = 0; i < (POP_SIZE-ELITE_SIZE - 3); i += 2) {
 			crossover(population[i], population[i+1]);
 			mutation(population[i]);
 			mutation(population[i + 1]);

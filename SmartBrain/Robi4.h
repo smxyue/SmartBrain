@@ -1,7 +1,8 @@
 #pragma once
-#define POP_SIZE 10
+#define POP_SIZE 200
+#define ELITE_SIZE 10
 #define GENE_SIZE 243
-#define MAX_ITERATION 100
+#define MAX_ITERATION 1000
 #define CROSSOVER_RATE 0.8
 #define MUTATION_RATE 0.01
 
