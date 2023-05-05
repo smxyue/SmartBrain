@@ -20,12 +20,13 @@ bool HorseGoL::randomWalk(int x, int y) {
     visited[x][y] = true;
     int count = 1; // 已经遍历的位置数
     int tryed = 0;
+    cout << "Start from (" << x << "," << y << ") ";
     while (count < N * N && tryed < MAX_TRY) 
     {
         vector<pair<int, int>> choices;
         for (pair<int, int> move:moves) {
             int nx = x + move.first, ny = y + move.second;
-            if (isValid(nx, ny) && !visited[nx][ny]) {
+            if (isValid(nx, ny)) {
                 choices.push_back({ nx, ny });
             }
         }
@@ -42,16 +43,20 @@ bool HorseGoL::randomWalk(int x, int y) {
         }
         tryed++;
     }
-    return true; // 如果已经遍历了所有的位置，返回true
+    cout << tryed << " tried!  " ;
+    if (count==N*N)
+        return true; // 如果已经遍历了所有的位置，返回true
+    return false;
 }
 
 int HorseGoL::main() {
-    srand(time(NULL)); // 设置随机数种子
-    if (randomWalk(0, 0)) { // 如果从左上角能够遍历所有的位置，输出成功信息
-        cout << "马可以经过所有的位置" << endl;
+    int x = rand() % 8;
+    int y = rand() % 8;
+    if (randomWalk(x, y)) { // 如果从左上角能够遍历所有的位置，输出成功信息
+        cout << "  √" << endl;
     }
     else { // 否则输出失败信息
-        cout << "马不能经过所有的位置" << endl;
+        cout << "  x" << endl;
     }
     return 0;
 }
