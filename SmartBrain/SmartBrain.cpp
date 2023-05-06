@@ -27,6 +27,6 @@ int main()
     //RandomTest myTest;
     HorseGoL myTest;
     //for(int i=0;i<243;i++)
-    for(int i=0;i<100;i++)
+    //for(int i=0;i<100;i++)
         myTest.main();
 }
