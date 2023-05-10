@@ -5,6 +5,7 @@
 #define MAX_ITERATION 1000
 #define CROSSOVER_RATE 0.8
 #define MUTATION_RATE 0.01
+#define DATAFILE "genLibsV4.dat"
 
 #include <vector>
 using namespace std;
@@ -31,6 +32,10 @@ class Robi4
 	void printStrategy(int index, char action);
 	void printPopulation(char**popluation);
 	void printFittness(double* score);
+	int bestGen(int *);
+	void saveData(char *);
+	int getData(char *);
+
 public:
 	void test();
 	void testG();

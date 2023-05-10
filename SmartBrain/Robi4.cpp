@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "Robi4.h"
 #include <vector>
 #include <algorithm>
@@ -266,7 +267,7 @@ int Robi4::goStep(char ch, char workCell[][10])
 int Robi4::evaluate_fitness(char* gene) {
 	// 初始化机器人状态
 	int score = 0;
-	for (int k = 0;k < 10;k++)
+	for (int k = 0;k < 100;k++)
 	{
 		row = 0;
 		col = 0;
@@ -281,7 +282,7 @@ int Robi4::evaluate_fitness(char* gene) {
 			score += fen;
 		}
 	}
-	return score / 10;
+	return score / 100;
 }
 
 void Robi4::Normalize(int* score, double* nor) {
@@ -449,7 +450,36 @@ void Robi4::mutation(char* gene) {
 		gene[index] = newAction;
 	}
 }
-
+void Robi4::saveData(char* gen)
+{
+	FILE* fp;
+	if ((fp = fopen(DATAFILE, "w")) == NULL)
+	{
+		printf("\n\rcan not open file %s", DATAFILE);
+		return;
+	}
+	for (int i = 0; i < GENE_SIZE; i++)
+	{
+		fputc(gen[i] + '0', fp);
+	}
+	fclose(fp);
+}
+int Robi4::getData(char* gen)
+{
+	FILE* fp;
+	if ((fp = fopen(DATAFILE, "r")) == NULL)
+	{
+		printf("\n\rcan not open file %s\n\r", DATAFILE);
+		return 0;
+	}
+	for (int i = 0; i < GENE_SIZE; i++)
+	{
+		char ch = fgetc(fp) - '0';
+		gen[i] = ch;
+	}
+	fclose(fp);
+	return 1;
+}
 void Robi4::testG()
 {
 	char M[244] = "65635365625235325265635365615135315125235325215135315165635365625235325265635365605035305025235325205035305015135315125235325215135315105035305025235325205035305065635356252353252656353656151353151252353252151353151656353656252353252656353454";
@@ -487,16 +517,39 @@ float genLikes(char* p1, char* p2)
 	}
 	return (float)count / GENE_SIZE;
 }
+int Robi4::bestGen(int* fitness)
+{
+	int index = 0;
+	int bestFitness = fitness[0];
+	for (int i = 1; i < POP_SIZE; i++)
+	{
+		if (fitness[i] > bestFitness)
+		{
+			index = i;
+			bestFitness = fitness[i];
+		}
+	}
+	return index;
+}
 int Robi4::main()
 {
+	int fitness[POP_SIZE];
 	char** population = generate_initial_population();
+	if (getData(population[0]))
+	{
+		for (int i = 0; i < POP_SIZE; i++)
+		{
+			for (int j = 0; j < POP_SIZE; j++)
+				population[i][j] = population[0][j];
+			mutation(population[i]);
+		}
+	}
 	// 开始迭代
 	int iteration = 0;
 	initCells();
 	while (iteration < MAX_ITERATION)
 	{
 		// 计算适应度函数值
-		int fitness[POP_SIZE];
 		for (int i = 0; i < POP_SIZE; i++) {
 			fitness[i] = evaluate_fitness(population[i]);
 		}
@@ -510,28 +563,19 @@ int Robi4::main()
 			mutation(population[i + 1]);
 		}
 		// 记录最优适应度函数值
-		int best_fitness = fitness[0];
-		for (int i = 1; i < POP_SIZE; i++) {
-			if (fitness[i] > best_fitness) {
-				best_fitness = fitness[i];
-			}
-		}
+		int best_index = bestGen(fitness);
 		// 打印当前迭代次数和最优适应度函数值
-		printf("%5d, Best Fitness: %5d\n", iteration, best_fitness);
+		printf("%5d, Best Fitness: %5d\n", iteration, fitness[best_index]);
 		iteration++;
 	}
 	// 输出最终的最优策略表
 	printf("Best Gene:\n\r");
+	int best_index = bestGen(fitness);
 	for (int i = 0; i < GENE_SIZE; i++) {
-		printf("%d", population[0][i]);
+		printf("%d", population[best_index][i]);
 	}
 	printf("\n");
-	initCells();
-	//printCells((char**)cells);
-
-	int s = evaluate_fitness(population[0]);
-	printf("\n\rScore:%d\n\r\n\r\n\r", s);
-
+	saveData(population[best_index]);
 	return 0;
 }
 void Robi4::test()
