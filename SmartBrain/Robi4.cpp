@@ -285,35 +285,50 @@ int Robi4::evaluate_fitness(char* gene) {
 }
 
 void Robi4::Normalize(int* score, double* nor) {
-	int min_val = INT_MAX;
-	int max_val = -1 * INT_MAX;
-	for (int i = 0; i < POP_SIZE; i++) {
-		if (score[i] < min_val) {
-			min_val = score[i];
+	int tmp[POP_SIZE];
+	for (int i = 0;i < POP_SIZE;i++)
+	{
+		if (score[i] == 0)
+			tmp[i] = 0;
+		else if (score[i] > 0)
+			tmp[i] = score[i] * 10;
+		else
+			tmp[i] = -100;
+	}
+	int min_val = tmp[0];
+	int max_val = tmp[0];
+	for (int i = 1; i < POP_SIZE; i++) {
+		if (tmp[i] < min_val) {
+			min_val = tmp[i];
 		}
-		if (score[i] > max_val)
+		if (tmp[i] > max_val)
 		{
-			max_val = score[i];
+			max_val = tmp[i];
 		}
 	}
 	if (max_val == min_val)
 		max_val = min_val + 1;
 	for (int i = 0; i < POP_SIZE; i++) {
-		nor[i] = (double)(score[i] - min_val) / (max_val - min_val);
+		nor[i] = (double)(tmp[i] - min_val) / (max_val - min_val);
 	}
+}
+bool cmp(pair<double,int>a, pair<double,int> b)
+{
+	return a.first < b.first;
+
 }
 void Robi4::printFittness(double* fitness)
 {
-	printf("\n\r\tfittness\n\r");
+	printf("\n\r适应度表(升序)\n\r");
 	vector<pair<double, int>> v;
 	for (int i = 0; i < POP_SIZE; i++)
 	{
 		v.push_back(make_pair(fitness[i], i));
 	}
-	sort(v.begin(), v.end());
+	sort(v.begin(), v.end(),cmp);
 	for (int i = 0; i < POP_SIZE; i++)
 	{
-		printf("[%3d:%.5f] ",v[i].second, v[i].first);
+		printf("[位置%3d:适应度%.5f]\n\r",v[i].second, v[i].first);
 	}
 	printf("\n\r");
 }
@@ -321,34 +336,43 @@ void Robi4::printFittness(double* fitness)
 void Robi4::selection(char** population, int* fitness) {
 	static int new_population[POP_SIZE][GENE_SIZE];
 	double cumulative_fitness[POP_SIZE];
+	double nor_fitness[POP_SIZE];
+	Normalize(fitness, nor_fitness);
+	//printFittness(nor_fitness);
 
-	Normalize(fitness, cumulative_fitness);
 	vector<pair<double, int>> v;
-	vector<int> sidx;
+	vector<int> sidx;	//选中的个体位置
 	for (int i = 0; i < POP_SIZE; i++)
 	{
-		v.push_back(make_pair(cumulative_fitness[i], i));
+		v.push_back(make_pair(nor_fitness[i], i)); 
 	}
-	sort(v.begin(), v.end());
-	printFittness(cumulative_fitness);	
+	sort(v.begin(), v.end(),cmp);//根据适应度排序
 	//选择
 	//精英
-	for (int i = POP_SIZE-ELITE_SIZE-1;i<POP_SIZE;i++)
+	for (int i = 1;i< ELITE_SIZE +1;i++)
 	{
+		int pos = POP_SIZE - i;
 		for (int j = 0;j < GENE_SIZE;j++)
-			new_population[i][j] = population[v[i].second][j];
+			new_population[pos][j] = population[v[pos].second][j]; //排序后越后越精英
 		//printf("%d:%f ", v[i].second,v[i].first);
 
 	}
 	//非精英
-	for (int i = ELITE_SIZE;i < POP_SIZE;i++)
+	//计算累计比率
+	double total_fitness = 0;
+	for (int i = 0;i < POP_SIZE;i++)
+		total_fitness += nor_fitness[i];
+	cumulative_fitness[0] = nor_fitness[0] / total_fitness;
+	for (int i = 1;i < POP_SIZE;i++)
+		cumulative_fitness[i] = nor_fitness[i] / total_fitness + cumulative_fitness[i - 1];
+	//选择非精英
+	for (int i = 0;i < POP_SIZE - ELITE_SIZE;i++)
 	{
 		int selected = 0;
-		double rnd = static_cast<double>(rand()) / double(RAND_MAX + 1);
-		while (rnd > v[selected].first && selected < POP_SIZE-1)
+		double rnd = (double)(rand()) / RAND_MAX;
+		while (rnd > cumulative_fitness[selected]&& selected < POP_SIZE-1)
 			selected++;
 		//printf("%3d: %.3f\n\r", v[selected].second,v[selected].first);
-		selected = v[selected].second;
 		sidx.push_back(selected);
 		for (int j = 0; j < GENE_SIZE; j++)
 		{
@@ -361,9 +385,22 @@ void Robi4::selection(char** population, int* fitness) {
 			population[i][j] = new_population[i][j];
 		}
 	}
-	sort(sidx.begin(), sidx.end());
-	for (int i = 0;i < POP_SIZE - ELITE_SIZE - 1;i++)
-		printf(" %d ", sidx.at(i));
+	//显示被选中的个体序号和被选中的次数
+	//顺序查看所有行
+	for (int i = 0;i < POP_SIZE;i++)
+	{
+		int count = 0;
+		//在选中记录中找
+		for (int j = 0;j < POP_SIZE - ELITE_SIZE - 1;j++)
+		{
+			if (sidx[j] == i)
+				count++;
+		}
+		if (count > 0)
+		{
+			//printf("位置%3d:选中%3d:适应度%.5f\n\r",i,count, nor_fitness[i]);
+		}
+	}
 }
 /* 交叉操作：对两个父代基因进行随机交叉，生成两个新的子代基因 */
 void Robi4::crossover(char* parent1, char* parent2) 
