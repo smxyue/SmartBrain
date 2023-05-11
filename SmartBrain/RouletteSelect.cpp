@@ -86,7 +86,7 @@ void RouletteSelect::select(int scale)
 	}
 	for (int i = 0;i < scale;i++)
 	{
-		printf("%3d [%3d fit %3f]:%3d\n\r",i,pool[i], fitness[i], selected[i]);
+		printf("[%3d 适应度 %.3f 累计比率 %.3f]:%3d\n\r",pool[i],(double)pool[i] / hehe(scale), fitness[i], selected[i]);
 	}
 }
 

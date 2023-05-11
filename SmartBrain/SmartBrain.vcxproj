@@ -165,6 +165,9 @@
     <ClInclude Include="Test.h" />
     <ClInclude Include="Tetravex.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="genLibsV4.dat" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

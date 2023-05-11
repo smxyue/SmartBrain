@@ -40,5 +40,6 @@ public:
 	void test();
 	void testG();
 	int main();
+	void testResult();
 };
 

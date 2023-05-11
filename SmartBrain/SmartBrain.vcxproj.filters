@@ -123,4 +123,7 @@
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="genLibsV4.dat" />
+  </ItemGroup>
 </Project>

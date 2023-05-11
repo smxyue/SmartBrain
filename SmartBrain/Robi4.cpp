@@ -486,15 +486,18 @@ void Robi4::testG()
 	char G[244] = "254355153256235251056355461151336154151034156110550150052030256256132252350325112052333054055231255051336154150665264150266506012264453605631520256431054354632404350334153250253251352352045150130156213436252353223135051260513356201524514343434";
 	col = 0;
 	row = 0;
-	int score = 0;
-	initCells();
-	for (int i = 0; i < 200; i++)
+	for (int k = 0;k < 10;k++)
 	{
-		int stateNo = getStateNo(cells);
-		char ch = M[stateNo] - '0';
-		score += goStep(ch, cells);
+		int score = 0;
+		initCells();
+		for (int i = 0; i < 200; i++)
+		{
+			int stateNo = getStateNo(cells);
+			char ch = G[stateNo] - '0';
+			score += goStep(ch, cells);
+		}
+		printf("G mehtod socre:%d\n\r", score);
 	}
-	printf("G mehtod socre:%d\n\r", score);
 }
 
 void Robi4::printPopulation(char** p)
@@ -601,4 +604,27 @@ void Robi4::test()
 	{
 		//printf("%4d: %.5f\n\r",i,genLikes(population[0],population[i]));
 	}
+}
+void Robi4::testResult()
+{
+	char gen[GENE_SIZE];
+	getData(gen);
+	int min = 500;
+	for (int i = 0;i < 10000;i++)
+	{
+		int score = 0;
+		col = 0;
+		row = 0;
+		initCells();
+		for (int j = 0; j < 200; j++)
+		{
+			int stateNo = getStateNo(cells);
+			char ch = gen[stateNo];
+			score += goStep(ch, cells);
+		}
+		if (min > score)
+			min = score;
+		printf("socre:%d\n\r", score);
+	}
+	printf("the lowest score is:%d", min);
 }
