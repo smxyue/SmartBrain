@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>走遍棋盘</title>
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.6.0/css/bootstrap.min.css">
+
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <h3 class="center">马走日</h3>
+            <cr />
+            <cr />
+            <hr />
+        </div>
+        <div class="row center">
+            <canvas id="canvas" width="400" height="400"></canvas>
+        </div>
+    </div>
+    <script>
+        let canvas = document.getElementById("canvas");
+        let ctx = canvas.getContext("2d");
+
+        // 定义每次可以走的8个方向
+        let directions = [
+            [1, 2],
+            [2, 1],
+            [2, -1],
+            [1, -2],
+            [-1, -2],
+            [-2, -1],
+            [-2, 1],
+            [-1, 2]
+        ];
+
+        // 定义画格子的函数
+        function drawRect(x, y, color) {
+            ctx.beginPath();
+            ctx.rect(x * 50, y * 50, 50, 50);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        // 定义休眠函数，单位毫秒
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+		function isok()
+		{
+			ok = true;
+			for(let i=0;i<8;i++)
+				for(let j=0;j<8;j++)
+					if (visited[i][j] == false)
+						ok = false;
+			return ok;
+		}
+        // 定义深度优先搜索算法函数
+        async function dfs(x, y, visited, count) {
+            visited[x][y] = true;
+
+            // 标记当前位置为已访问并画出红色的矩形
+            drawRect(x, y, "red");
+
+            // 每200ms执行一次
+            await sleep(200);
+
+            // 访问所有八个方向
+            var moves=[];
+			var next = -1;
+			for (let i = 0; i < directions.length; i++) {
+                let dx = directions[i][0];
+                let dy = directions[i][1];
+                let nx = x + dx;
+                let ny = y + dy;
+
+
+                if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8 ) {
+					moves.push([nx,ny]);
+				}
+			}
+			for(let i=0;i<moves.length;i++)
+			{
+				if (visited[moves[i][0]][moves[i][1]] == false)
+				{
+					next = i;
+					break;
+				}
+			}
+			if (next == -1)
+				next = Math.floor(Math.random() * moves.length);
+			nx = moves[next][0];
+			ny = moves[next][1];
+            count++;
+                    // 记录走了多少步，如果超过9999就退出函数
+                    if (count > 1000)
+                        throw new Error("失败！");
+					// 标记已经访问过的点为绿色
+			if (x ==startX && y == startY)
+				drawRect(x,y,"purple");
+			else
+				drawRect(x, y, "green");
+
+			if (!isok())
+			{
+				await dfs(nx, ny, visited, count);
+			}
+        }
+
+        // 初始化访问状态数组
+        let visited = [];
+
+        for (let i = 0; i < 8; i++) {
+            visited[i] = [];
+            for (let j = 0; j < 8; j++) {
+                visited[i][j] = false;
+				if ((i +j) %2 ==0)
+					drawRect(j,i,"black");
+				else
+					drawRect(j,i,"white");
+            }
+        }
+
+		ctx.strokeStyle = "#FF0000";
+		ctx.beginPath();
+		ctx.rect(0, 0, 400, 400);
+		ctx.closePath();
+		ctx.stroke();
+
+
+        // 随机选择一个起始点
+        let startX = Math.floor(Math.random() * 8);
+        let startY = Math.floor(Math.random() * 8);
+		drawRect(startX,startY,"purple");
+
+        // 访问起始点
+	    dfs(startX, startY, visited, 0)
+            .then(() => {
+                alert("成功！");
+            })
+            .catch((err) => {
+                alert(err.message);
+            });
+    </script>
+</body>
+</html>
